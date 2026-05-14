@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduLive — Teacher Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #f7f8fc;
+  --surface2: #eef0f8;
+  --border: #e4e7f0;
+  --accent: #4f46e5;
+  --accent2: #7c3aed;
+  --accent-soft: #eef2ff;
+  --text: #111827;
+  --text2: #6b7280;
+  --text3: #9ca3af;
+  --green: #10b981;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --blue: #3b82f6;
+  --shadow: 0 1px 3px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.03);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  --sidebar: 280px;
+  --topbar: 60px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height:var(--topbar); display:flex; align-items:center; padding:0 20px;
+  gap:12px; border-bottom:1px solid var(--border); background:var(--bg);
+  position:relative; z-index:100; flex-shrink:0;
+}
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon { width:34px; height:34px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:9px; display:flex; align-items:center; justify-content:center; }
+.logo-icon svg { width:18px; height:18px; color:#fff; }
+.logo-text { font-size:16px; font-weight:800; letter-spacing:-.3px; }
+.logo-text em { color:var(--accent); font-style:normal; }
+.topbar-divider { flex:1; }
+.live-pill { display:flex; align-items:center; gap:6px; padding:5px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:999px; font-size:12px; font-weight:700; color:var(--red); }
+.blink { width:6px; height:6px; border-radius:50%; background:currentColor; animation:blink 1s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+.topbar-stat { display:flex; align-items:center; gap:8px; padding:6px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; font-size:13px; }
+.topbar-stat strong { font-size:18px; font-weight:800; color:var(--accent); font-family:'DM Mono',monospace; }
+.topbar-btn { display:flex; align-items:center; gap:6px; padding:8px 16px; border-radius:10px; border:1.5px solid var(--border); background:var(--bg); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; color:var(--text); transition:all .15s; }
+.topbar-btn:hover { background:var(--surface); }
+.topbar-btn.danger { border-color:#fca5a5; color:var(--red); }
+.topbar-btn.danger:hover { background:#fef2f2; }
+.topbar-btn svg { width:15px; height:15px; }
+.topbar-btn.locked { border-color:#fcd34d; background:#fffbeb; color:#92400e; }
+.search-box { display:flex; align-items:center; gap:8px; padding:0 12px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); }
+.search-box svg { width:15px; height:15px; color:var(--text3); flex-shrink:0; }
+.search-box input { border:none; background:transparent; font-family:inherit; font-size:13px; padding:8px 0; outline:none; width:180px; }
+
+/* ── LAYOUT ── */
+.app-body { flex:1; display:flex; overflow:hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:var(--sidebar); flex-shrink:0; border-right:1px solid var(--border);
+  display:flex; flex-direction:column; background:var(--surface); overflow:hidden;
+}
+.sidebar-section { padding:16px; border-bottom:1px solid var(--border); }
+.sidebar-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--text3); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.sidebar-title svg { width:12px; height:12px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; font-size:13px; font-weight:500; cursor:pointer; color:var(--text2); transition:all .15s; margin-bottom:2px; border:1.5px solid transparent; }
+.nav-item svg { width:16px; height:16px; flex-shrink:0; }
+.nav-item:hover { background:var(--surface2); color:var(--text); }
+.nav-item.active { background:var(--accent-soft); color:var(--accent); border-color:#c7d2fe; font-weight:600; }
+.nav-item .nav-badge { margin-left:auto; font-size:10px; font-weight:700; padding:2px 7px; border-radius:999px; background:var(--red); color:#fff; }
+.sidebar-ptt { padding:16px; }
+.ptt-btn { width:100%; padding:14px; background:linear-gradient(135deg,#1e293b,#374151); color:#fff; border:none; border-radius:12px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all .2s; }
+.ptt-btn:active,.ptt-btn.recording { background:linear-gradient(135deg,var(--red),#dc2626); box-shadow:0 0 0 4px rgba(239,68,68,.2); }
+.ptt-btn svg { width:18px; height:18px; }
+.selected-info { font-size:12px; text-align:center; color:var(--text3); margin-top:8px; }
+
+/* ── MAIN CONTENT ── */
+.main-content { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+/* ── PANELS ── */
+.panel { flex:1; display:none; flex-direction:column; overflow:hidden; }
+.panel.active { display:flex; }
+
+/* ── STUDENT GRID PANEL ── */
+.panel-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.panel-title { font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.panel-title svg { width:18px; height:18px; color:var(--accent); }
+.grid-controls { display:flex; gap:8px; align-items:center; }
+.view-btn { width:32px; height:32px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text2); }
+.view-btn.active { background:var(--accent-soft); border-color:#c7d2fe; color:var(--accent); }
+.view-btn svg { width:15px; height:15px; }
+.students-grid-wrap { flex:1; overflow-y:auto; padding:16px; }
+.students-grid-wrap::-webkit-scrollbar { width:5px; }
+.students-grid-wrap::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:999px; }
+.students-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+.students-grid.list-mode { grid-template-columns:1fr; }
+
+/* ── STUDENT CARD ── */
+.student-card {
+  background:var(--bg); border:1.5px solid var(--border); border-radius:16px;
+  overflow:hidden; transition:all .2s; position:relative;
+}
+.student-card:hover { border-color:#c7d2fe; box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.student-card.selected { border-color:var(--accent); background:var(--accent-soft); }
+.student-card.spotlight { border-color:var(--yellow); box-shadow:0 0 0 3px rgba(245,158,11,.2); }
+.card-top { padding:12px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+.card-avatar { width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.card-info { flex:1; min-width:0; }
+.card-name { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.card-class { font-size:11px; color:var(--text2); }
+.card-id { font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:1px; }
+.card-actions { display:flex; gap:5px; }
+.card-action { width:30px; height:30px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text2); font-size:13px; transition:all .15s; }
+.card-action:hover { background:var(--surface2); color:var(--text); }
+.card-action.danger:hover { background:#fef2f2; color:var(--red); border-color:#fca5a5; }
+.card-action.warn:hover { background:#fffbeb; color:var(--yellow); }
+.card-action.success:hover { background:#ecfdf5; color:var(--green); }
+.card-action svg { width:14px; height:14px; }
+.card-badges { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; margin-right:4px; }
+.badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:5px; white-space:nowrap; }
+.badge.hand { background:#fffbeb; color:#92400e; border:1px solid #fcd34d; animation:blink 1.2s infinite; }
+.badge.muted { background:#fef2f2; color:var(--red); border:1px solid #fca5a5; }
+.badge.frozen { background:#eff6ff; color:var(--blue); border:1px solid #bfdbfe; }
+.card-select { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+.card-media { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:10px 12px; }
+.media-slot { border-radius:10px; overflow:hidden; background:#0f172a; position:relative; }
+.media-slot-label { position:absolute; top:6px; left:8px; font-size:9px; font-weight:700; background:rgba(0,0,0,.6); color:#fff; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:.5px; }
+.media-slot img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
+.card-bottom { padding:8px 12px; border-top:1px solid var(--border); display:flex; gap:6px; justify-content:flex-end; background:var(--surface); }
+.card-bottom-btn { display:flex; align-items:center; gap:4px; padding:5px 10px; border-radius:7px; border:1.5px solid var(--border); background:var(--bg); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; color:var(--text2); transition:all .15s; }
+.card-bottom-btn:hover { background:var(--surface2); }
+.card-bottom-btn.active { background:var(--accent-soft); color:var(--accent); border-color:#c7d2fe; }
+.card-bottom-btn svg { width:12px; height:12px; }
+
+/* ── SPOTLIGHT OVERLAY ── */
+.spotlight-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.8);
+  z-index:200; align-items:center; justify-content:center; flex-direction:column; gap:16px;
+}
+.spotlight-overlay.open { display:flex; }
+.spotlight-header { display:flex; align-items:center; gap:12px; }
+.spotlight-header h2 { color:#fff; font-size:18px; font-weight:700; }
+.spotlight-close { padding:8px 16px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:#fff; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.spotlight-media { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:90%; max-width:1000px; }
+.spotlight-img { border-radius:12px; overflow:hidden; background:#0f172a; }
+.spotlight-img-label { background:#1e293b; color:#94a3b8; font-size:11px; font-weight:600; padding:8px 14px; text-transform:uppercase; letter-spacing:.6px; }
+.spotlight-img img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
+
+/* ── CHAT PANEL ── */
+.chat-panel { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.chat-messages { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+.chat-messages::-webkit-scrollbar { width:4px; }
+.chat-messages::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:999px; }
+.chat-msg { display:flex; gap:10px; }
+.chat-msg.teacher { flex-direction:row-reverse; }
+.cm-avatar { width:30px; height:30px; border-radius:8px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+.cm-bubble { max-width:80%; padding:9px 13px; border-radius:12px; font-size:13px; line-height:1.5; }
+.cm-bubble.student { background:var(--surface); border:1px solid var(--border); border-bottom-left-radius:3px; }
+.cm-bubble.teacher { background:var(--accent); color:#fff; border-bottom-right-radius:3px; }
+.cm-name { font-size:10px; font-weight:700; color:var(--text3); margin-bottom:3px; }
+.cm-bubble.teacher .cm-name { color:rgba(255,255,255,.7); }
+.cm-sys { text-align:center; font-size:11px; color:var(--text3); padding:4px; }
+.announcement-bar { background:linear-gradient(135deg,var(--accent),var(--accent2)); margin:12px 16px; padding:10px 14px; border-radius:10px; color:#fff; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.chat-input-area { border-top:1px solid var(--border); padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+.chat-input-row { display:flex; gap:8px; }
+.chat-input { flex:1; border:1.5px solid var(--border); border-radius:10px; padding:9px 14px; font-family:inherit; font-size:13px; outline:none; background:var(--surface); }
+.chat-input:focus { border-color:var(--accent); background:#fff; }
+.btn-send { background:var(--accent); color:#fff; border:none; border-radius:10px; padding:9px 16px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; }
+.btn-send:hover { background:var(--accent2); }
+.btn-send svg { width:14px; height:14px; }
+.ann-row { display:flex; gap:8px; }
+.ann-input { flex:1; border:1.5px solid var(--border); border-radius:10px; padding:8px 12px; font-family:inherit; font-size:12px; outline:none; background:#fffbeb; border-color:#fcd34d; }
+.btn-ann { background:#f59e0b; color:#fff; border:none; border-radius:10px; padding:8px 14px; font-family:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+
+/* ── POLLS PANEL ── */
+.polls-panel { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:14px; }
+.polls-panel::-webkit-scrollbar { width:4px; }
+.polls-panel::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:999px; }
+.poll-create-card { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; padding:16px; }
+.poll-create-card h3 { font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.poll-create-card h3 svg { width:15px; height:15px; color:var(--accent); }
+.poll-field { margin-bottom:8px; }
+.poll-field input { width:100%; border:1.5px solid var(--border); border-radius:9px; padding:9px 12px; font-family:inherit; font-size:13px; outline:none; background:var(--bg); }
+.poll-field input:focus { border-color:var(--accent); }
+.btn-create-poll { width:100%; padding:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border:none; border-radius:9px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; margin-top:4px; }
+.poll-card { background:var(--bg); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; }
+.poll-card-header { padding:12px 14px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.poll-card-header h4 { font-size:13px; font-weight:700; }
+.poll-badge { font-size:10px; font-weight:700; padding:3px 8px; border-radius:5px; }
+.poll-badge.active { background:#ecfdf5; color:var(--green); border:1px solid #a7f3d0; }
+.poll-badge.closed { background:var(--surface2); color:var(--text3); }
+.poll-options { padding:10px 14px; display:flex; flex-direction:column; gap:6px; }
+.poll-option-bar { display:flex; align-items:center; gap:8px; font-size:12px; }
+.poll-option-bar span:first-child { width:80px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.poll-bar { flex:1; height:8px; background:var(--surface2); border-radius:999px; overflow:hidden; }
+.poll-bar-fill { height:100%; background:linear-gradient(to right,var(--accent),var(--accent2)); border-radius:999px; transition:width .5s; }
+.poll-option-bar small { width:28px; text-align:right; color:var(--text3); }
+.poll-card-footer { padding:8px 14px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; }
+.btn-close-poll { font-size:11px; font-weight:700; padding:5px 12px; border-radius:7px; background:#fef2f2; color:var(--red); border:1px solid #fca5a5; cursor:pointer; font-family:inherit; }
+
+/* ── LOGS PANEL ── */
+.logs-panel { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+.logs-panel::-webkit-scrollbar { width:4px; }
+.log-filter { display:flex; gap:6px; }
+.log-filter button { padding:6px 12px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface); font-family:inherit; font-size:11px; font-weight:600; cursor:pointer; }
+.log-filter button.active { background:var(--accent-soft); color:var(--accent); border-color:#c7d2fe; }
+.log-terminal { background:#0f172a; border-radius:12px; padding:14px; flex:1; overflow-y:auto; font-family:'DM Mono',monospace; font-size:11px; line-height:1.8; }
+.log-terminal::-webkit-scrollbar { width:4px; }
+.log-terminal::-webkit-scrollbar-thumb { background:#334155; border-radius:999px; }
+.log-line { padding:2px 0; border-bottom:1px solid rgba(255,255,255,.03); }
+.log-line .time { color:#475569; margin-right:8px; }
+.log-line.info .msg { color:#94a3b8; }
+.log-line.join .msg { color:#34d399; }
+.log-line.leave .msg { color:#f87171; }
+.log-line.warn .msg { color:#fbbf24; }
+.log-line.action .msg { color:#60a5fa; }
+
+/* ── SESSION LOG ── */
+.session-log-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:14px; }
+.session-log-card h3 { font-size:12px; font-weight:700; color:var(--text2); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
+.session-log-card select { width:100%; border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-family:inherit; font-size:12px; outline:none; background:var(--bg); margin-bottom:8px; }
+.session-log-output { background:#0f172a; color:#94a3b8; font-family:'DM Mono',monospace; font-size:10px; border-radius:8px; padding:10px; max-height:120px; overflow-y:auto; white-space:pre-wrap; }
+
+/* ── STATS WIDGET ── */
+.stats-widget { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:16px; border-bottom:1px solid var(--border); }
+.stat-mini { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+.stat-mini-val { font-size:22px; font-weight:800; font-family:'DM Mono',monospace; color:var(--accent); letter-spacing:-.5px; }
+.stat-mini-lbl { font-size:10px; color:var(--text3); font-weight:600; margin-top:2px; text-transform:uppercase; letter-spacing:.4px; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--text); color:#fff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:600; z-index:999; box-shadow:var(--shadow-md); display:flex; align-items:center; gap:8px; opacity:0; transform:translateY(8px); transition:all .25s; pointer-events:none; }
+.toast.show { opacity:1; transform:none; }
+
+/* ── EMPTY STATE ── */
+.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:12px; color:var(--text3); }
+.empty-state svg { width:48px; height:48px; opacity:.3; }
+.empty-state p { font-size:14px; font-weight:500; }
+
+/* scrollbar global */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:999px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    </div>
+    <span class="logo-text">Edu<em>Live</em> <span style="color:var(--text3);font-weight:400;font-size:13px;">Teacher Hub</span></span>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-box">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    <input id="searchInput" placeholder="Search students...">
+  </div>
+  <div class="topbar-stat">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--text3);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    <strong id="studentCount">0</strong><span style="font-size:12px;color:var(--text3);">Students</span>
+  </div>
+  <div class="live-pill"><span class="blink"></span>LIVE SESSION</div>
+  <button id="lockBtn" class="topbar-btn" onclick="toggleLock()">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 018 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+    Lock Room
+  </button>
+  <button class="topbar-btn danger" onclick="kickAll()">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+    End Session
+  </button>
+</div>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- Nav -->
+    <div class="sidebar-section">
+      <div class="sidebar-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg> Navigation</div>
+      <div class="nav-item active" data-panel="grid" onclick="switchPanel('grid')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        Student Streams
+        <span class="nav-badge" id="navHandCount" style="display:none">0</span>
+      </div>
+      <div class="nav-item" data-panel="chat" onclick="switchPanel('chat')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Chat & Announcements
+        <span class="nav-badge" id="navChatBadge" style="display:none">!</span>
+      </div>
+      <div class="nav-item" data-panel="polls" onclick="switchPanel('polls')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Polls & Quizzes
+      </div>
+      <div class="nav-item" data-panel="logs" onclick="switchPanel('logs')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Session Logs
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sidebar-section">
+      <div class="sidebar-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg> Live Stats</div>
+      <div class="stats-widget" style="padding:0;border:none;grid-template-columns:1fr 1fr 1fr;">
+        <div class="stat-mini"><div class="stat-mini-val" id="sbStudents">0</div><div class="stat-mini-lbl">Online</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" id="sbHands">0</div><div class="stat-mini-lbl">Hands 🖐</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" id="sbMuted">0</div><div class="stat-mini-lbl">Muted 🔇</div></div>
+      </div>
+    </div>
+
+    <!-- PTT -->
+    <div class="sidebar-ptt">
+      <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Push to Talk</div>
+      <button id="pttBtn" class="ptt-btn" onmousedown="startPTT()" onmouseup="stopPTT()" onmouseleave="stopPTT()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 3a4 4 0 014 4v4a4 4 0 11-8 0V7a4 4 0 014-4z"/></svg>
+        HOLD TO SPEAK
+      </button>
+      <div class="selected-info" id="pttInfo">No students selected</div>
+      <div style="margin-top:10px;display:flex;gap:6px;">
+        <button onclick="selectAll()" style="flex:1;padding:7px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">Select All</button>
+        <button onclick="clearSelection()" style="flex:1;padding:7px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;">Clear</button>
+      </div>
+    </div>
+
+    <!-- Session logs student select -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">Session Log</div>
+      <select id="logStudentSelect" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:12px;outline:none;background:var(--bg);margin-bottom:6px;"></select>
+      <button onclick="fetchLog()" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">📂 Fetch Log</button>
+      <pre id="logOutput" class="session-log-output" style="margin-top:8px;"></pre>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- PANEL: STUDENTS GRID -->
+    <div id="panelGrid" class="panel active">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          Live Student Streams
+        </div>
+        <div class="grid-controls">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;">
+            <input type="checkbox" id="allowChatChk" style="accent-color:var(--accent);" checked> Allow chat
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;">
+            <input type="checkbox" id="allowReactChk" style="accent-color:var(--accent);" checked> Reactions
+          </label>
+          <button class="view-btn active" id="viewGrid" onclick="setGridView('grid')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          </button>
+          <button class="view-btn" id="viewList" onclick="setGridView('list')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <button onclick="dismissAllHands()" class="topbar-btn" style="font-size:11px;padding:6px 12px;">✋ Dismiss All</button>
+          <button onclick="syncConfig()" class="topbar-btn" style="font-size:11px;padding:6px 12px;background:var(--accent-soft);color:var(--accent);border-color:#c7d2fe;">⚙️ Sync</button>
+          <button onclick="clearSpotlight()" class="topbar-btn" style="font-size:11px;padding:6px 12px;">✨ Clear Spotlight</button>
+        </div>
+      </div>
+      <div class="students-grid-wrap">
+        <div id="studentsGrid" class="students-grid">
+          <div class="empty-state" style="grid-column:1/-1">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <p>Waiting for students to join...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: CHAT -->
+    <div id="panelChat" class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg> Chat & Announcements</div>
+      </div>
+      <div id="pinnedBar" style="display:none;margin:12px 16px 0;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:600;color:#92400e;">
+        📌 <span id="pinnedText"></span>
+      </div>
+      <div class="chat-panel">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+          <div class="ann-row">
+            <input class="ann-input" id="annInput" placeholder="📢 Broadcast announcement to all...">
+            <button class="btn-ann" onclick="sendAnnouncement()">📢 Send</button>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chatInput" placeholder="Message everyone..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn-send" onclick="sendChat()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: POLLS -->
+    <div id="panelPolls" class="panel">
+      <div class="panel-header"><div class="panel-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> Polls & Quizzes</div></div>
+      <div class="polls-panel" id="pollsPanel">
+        <div class="poll-create-card">
+          <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Create New Poll</h3>
+          <div class="poll-field"><input id="pollQ" placeholder="Question text..."></div>
+          <div class="poll-field"><input id="pollOpts" placeholder="Options: A | B | C | D"></div>
+          <div class="poll-field"><input id="pollCorrect" placeholder="Correct answer (optional)"></div>
+          <button class="btn-create-poll" onclick="createPoll()">Launch Poll →</button>
+        </div>
+        <div id="pollsList"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: LOGS -->
+    <div id="panelLogs" class="panel">
+      <div class="panel-header">
+        <div class="panel-title"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> Activity Logs</div>
+        <div class="log-filter">
+          <button class="active" onclick="filterLog('all',this)">All</button>
+          <button onclick="filterLog('join',this)">Joins</button>
+          <button onclick="filterLog('action',this)">Actions</button>
+          <button onclick="filterLog('warn',this)">Warnings</button>
+        </div>
+      </div>
+      <div class="logs-panel">
+        <div class="log-terminal" id="logTerminal"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SPOTLIGHT OVERLAY -->
+<div id="spotlightOverlay" class="spotlight-overlay">
+  <div class="spotlight-header">
+    <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;" id="spotAvatar">🐯</div>
+    <h2 id="spotName">Student</h2>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,.2);"></div>
+    <span style="color:rgba(255,255,255,.6);font-size:13px;" id="spotClass">—</span>
+  </div>
+  <div class="spotlight-media">
+    <div class="spotlight-img">
+      <div class="spotlight-img-label">🖥 Screen Share</div>
+      <img id="spotScreen" src="" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">
+    </div>
+    <div class="spotlight-img">
+      <div class="spotlight-img-label">📷 Camera</div>
+      <img id="spotCam" src="" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">
+    </div>
+  </div>
+  <button class="spotlight-close" onclick="closeSpotlight()">✕ Close Spotlight</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const ws = new WebSocket('ws://localhost:8080/?role=teacher');
+const studentsMap = new Map();
+const selectedIds = new Set();
+const pollsMap = new Map();
+const chatHistory = [];
+let classLocked = false, currentSpotlight = null;
+let pttRecorder = null, audioStreamGlobal = null;
+let currentLogFilter = 'all';
+
+// ── WS ──
+ws.onopen = () => addLog('Connected to EduLive server','info');
+ws.onclose = () => addLog('Disconnected from server','warn');
+
+ws.onmessage = async (ev) => {
+  if(typeof ev.data === 'string'){
+    const msg = JSON.parse(ev.data);
+    switch(msg.type){
+      case 'ACTIVE_LIST': msg.data.forEach(s=>studentsMap.set(s.id,{...s,screenImg:null,camImg:null})); render(); updateDropdown(); break;
+      case 'NEW_STUDENT': studentsMap.set(msg.data.id,{...msg.data,screenImg:null,camImg:null}); render(); updateDropdown(); toast(`${msg.data.username} joined`,'✅'); addLog(`${msg.data.username} joined (${msg.data.class})`,'join'); break;
+      case 'DISCONNECT': studentsMap.delete(msg.data.id); render(); updateDropdown(); addLog(`Student left`,'leave'); break;
+      case 'HAND_RAISE': {const s=studentsMap.get(msg.studentId);if(s){s.handRaised=msg.raised;render();updateSidebarStats();if(msg.raised){toast(`${msg.username} raised hand`,'✋');addLog(`${msg.username} raised hand`,'action');}}} break;
+      case 'STUDENT_MUTED': {const s=studentsMap.get(msg.studentId);if(s){s.muted=msg.muted;render();}} break;
+      case 'CHAT_MSG': addChatMsg(msg.data); break;
+      case 'CHAT_HISTORY': chatHistory.push(...msg.data); chatHistory.slice(-80).forEach(m=>addChatMsg(m)); break;
+      case 'PINNED_MESSAGES': renderPinned(msg.data); break;
+      case 'POLL_CREATE': pollsMap.set(msg.data.id,msg.data); renderPolls(); break;
+      case 'POLL_CLOSED': {const p=pollsMap.get(msg.pollId);if(p){p.active=false;p.answers=msg.results;renderPolls();}} break;
+      case 'POLL_ANSWER': {const p=pollsMap.get(msg.pollId);if(p){if(!p.answers)p.answers={};p.answers[msg.studentId]={answer:msg.answer,username:msg.username};renderPolls();}} break;
+      case 'ANNOUNCEMENT': addAnnouncement(msg.data); break;
+      case 'SYSTEM_NOTIFY': addLog(msg.message, msg.kind||'info'); break;
+      case 'SESSION_LOG': document.getElementById('logOutput').textContent=JSON.stringify(msg.data,null,2); break;
+    }
+  } else {
+    const buffer = await ev.data.arrayBuffer();
+    const view = new DataView(buffer);
+    let delim=-1;
+    for(let i=0;i<Math.min(view.byteLength,80);i++) if(view.getUint8(i)===124){delim=i;break;}
+    if(delim===-1) return;
+    const sid = new TextDecoder().decode(buffer.slice(0,delim));
+    const mt = String.fromCharCode(view.getUint8(delim+1));
+    const data = buffer.slice(delim+2);
+    const s = studentsMap.get(sid);
+    if(s){
+      const url = URL.createObjectURL(new Blob([data],{type:'image/jpeg'}));
+      if(mt==='S'){if(s.screenImg)URL.revokeObjectURL(s.screenImg);s.screenImg=url;}
+      if(mt==='C'){if(s.camImg)URL.revokeObjectURL(s.camImg);s.camImg=url;}
+      updateCardImages(sid);
+      // Update spotlight if open
+      if(currentSpotlight===sid){
+        if(mt==='S') document.getElementById('spotScreen').src=url;
+        if(mt==='C') document.getElementById('spotCam').src=url;
+      }
+    }
+  }
+};
+
+function send(obj){ if(ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify(obj)); }
+
+// ── RENDER ──
+function render(){
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const grid = document.getElementById('studentsGrid');
+  grid.innerHTML='';
+  let count=0;
+  if(studentsMap.size===0){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg><p>Waiting for students to join...</p></div>`;
+    document.getElementById('studentCount').textContent='0';
+    return;
+  }
+  for(const s of studentsMap.values()){
+    if(search && !s.username.toLowerCase().includes(search)&&!s.id.includes(search)) continue;
+    count++;
+    const card = document.createElement('div');
+    card.className=`student-card${selectedIds.has(s.id)?' selected':''}${s.id===currentSpotlight?' spotlight':''}`;
+    card.id=`card-${s.id}`;
+    const noScreen = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%230f172a'/%3E%3Ctext x='50%25' y='55%25' fill='%23475569' font-size='1.2' text-anchor='middle' font-family='sans-serif'%3ENo screen%3C/text%3E%3C/svg%3E";
+    const noCam = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231e40af'/%3E%3Ctext x='50%25' y='55%25' fill='%2393c5fd' font-size='1.2' text-anchor='middle' font-family='sans-serif'%3ENo camera%3C/text%3E%3C/svg%3E";
+    card.innerHTML=`
+      <div class="card-top">
+        <input type="checkbox" class="card-select" ${selectedIds.has(s.id)?'checked':''}>
+        <div class="card-avatar">${s.avatar||'👤'}</div>
+        <div class="card-info">
+          <div class="card-name">${esc(s.username)}</div>
+          <div class="card-class">${esc(s.class||'')}</div>
+          <div class="card-id">${s.id}</div>
+        </div>
+        <div class="card-badges">
+          ${s.handRaised?'<span class="badge hand">✋ Hand</span>':''}
+          ${s.muted?'<span class="badge muted">🔇 Muted</span>':''}
+        </div>
+        <div class="card-actions">
+          <button class="card-action" title="Mute/Unmute">${s.muted?'🔇':'🎤'}</button>
+          <button class="card-action warn" title="Freeze">❄️</button>
+          <button class="card-action danger" title="Kick">🚪</button>
+        </div>
+      </div>
+      <div class="card-media">
+        <div class="media-slot">
+          <div class="media-slot-label">🖥 Screen</div>
+          <img class="card-screen" src="${s.screenImg||noScreen}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">
+        </div>
+        <div class="media-slot">
+          <div class="media-slot-label">📷 Cam</div>
+          <img class="card-cam" src="${s.camImg||noCam}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">
+        </div>
+      </div>
+      <div class="card-bottom">
+        <button class="card-bottom-btn${s.id===currentSpotlight?' active':''}">✨ Spotlight</button>
+        <button class="card-bottom-btn">✋ Dismiss</button>
+        <button class="card-bottom-btn" onclick="openFullscreen('${s.id}')">🔍 View Full</button>
+      </div>
+    `;
+    // Events
+    card.querySelector('.card-select').onchange=e=>{
+      if(e.target.checked) selectedIds.add(s.id); else selectedIds.delete(s.id);
+      card.classList.toggle('selected',e.target.checked);
+      updatePTTInfo();
+    };
+    card.querySelectorAll('.card-actions button')[0].onclick=()=>toggleMute(s.id,!s.muted);
+    card.querySelectorAll('.card-actions button')[1].onclick=()=>{send({type:'FREEZE_SCREEN',studentId:s.id,frozen:true});toast('Screen frozen','❄️');};
+    card.querySelectorAll('.card-actions button')[2].onclick=()=>kick(s.id);
+    card.querySelectorAll('.card-bottom-btn')[0].onclick=()=>spotlight(s.id);
+    card.querySelectorAll('.card-bottom-btn')[1].onclick=()=>{send({type:'DISMISS_HAND',studentId:s.id});const st=studentsMap.get(s.id);if(st){st.handRaised=false;render();}};
+    // Click to full view
+    card.querySelector('.card-screen').onclick=()=>openFullscreen(s.id);
+    card.querySelector('.card-cam').onclick=()=>openFullscreen(s.id);
+    grid.appendChild(card);
+  }
+  document.getElementById('studentCount').textContent=studentsMap.size;
+  document.getElementById('sbStudents').textContent=studentsMap.size;
+  updateSidebarStats();
+  updateHandBadge();
+}
+
+function updateCardImages(sid){
+  const s=studentsMap.get(sid); if(!s)return;
+  const card=document.getElementById(`card-${sid}`);
+  if(!card)return;
+  const sc=card.querySelector('.card-screen');
+  const ca=card.querySelector('.card-cam');
+  if(sc&&s.screenImg) sc.src=s.screenImg;
+  if(ca&&s.camImg) ca.src=s.camImg;
+}
+
+function updateSidebarStats(){
+  let hands=0,muted=0;
+  for(const s of studentsMap.values()){if(s.handRaised)hands++;if(s.muted)muted++;}
+  document.getElementById('sbHands').textContent=hands;
+  document.getElementById('sbMuted').textContent=muted;
+}
+function updateHandBadge(){
+  const hands=[...studentsMap.values()].filter(s=>s.handRaised).length;
+  const b=document.getElementById('navHandCount');
+  b.style.display=hands>0?'':'none'; b.textContent=hands;
+}
+function updatePTTInfo(){
+  const n=selectedIds.size;
+  document.getElementById('pttInfo').textContent=n>0?`${n} student${n>1?'s':''} selected`:'No students selected';
+}
+
+// ── ACTIONS ──
+function toggleMute(sid,mute){ send({type:mute?'MUTE_STUDENT':'UNMUTE_STUDENT',studentId:sid}); const s=studentsMap.get(sid);if(s){s.muted=mute;render();} }
+function kick(sid){ if(!confirm('Remove this student?')) return; send({type:'KICK_STUDENT',studentId:sid,reason:'Kicked'}); studentsMap.delete(sid); render(); updateDropdown(); }
+function kickAll(){ if(!confirm('End session for all students?')) return; for(const sid of studentsMap.keys()) send({type:'KICK_STUDENT',studentId:sid,reason:'Session ended'}); studentsMap.clear(); render(); }
+function spotlight(sid){ currentSpotlight=sid; send({type:'SPOTLIGHT',studentId:sid}); render(); openFullscreen(sid); }
+function clearSpotlight(){ currentSpotlight=null; send({type:'CLEAR_SPOTLIGHT'}); render(); }
+function dismissAllHands(){ for(const sid of studentsMap.keys()) send({type:'DISMISS_HAND',studentId:sid}); studentsMap.forEach(s=>s.handRaised=false); render(); }
+function syncConfig(){ send({type:'UPDATE_ADMIN_CONFIG',config:{allowStudentChat:document.getElementById('allowChatChk').checked,allowStudentReactions:document.getElementById('allowReactChk').checked}}); toast('Config synced','⚙️'); }
+function selectAll(){ studentsMap.forEach((_,id)=>selectedIds.add(id)); render(); updatePTTInfo(); }
+function clearSelection(){ selectedIds.clear(); render(); updatePTTInfo(); }
+function toggleLock(){ classLocked=!classLocked; send({type:'LOCK_CLASSROOM',locked:classLocked}); const b=document.getElementById('lockBtn'); b.classList.toggle('locked',classLocked); b.innerHTML=classLocked?`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Unlock Room`:`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 018 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg> Lock Room`; toast(classLocked?'Room locked 🔒':'Room unlocked 🔓',''); }
+
+// ── SPOTLIGHT FULLSCREEN ──
+function openFullscreen(sid){
+  const s=studentsMap.get(sid); if(!s)return;
+  currentSpotlight=sid;
+  document.getElementById('spotAvatar').textContent=s.avatar||'👤';
+  document.getElementById('spotName').textContent=s.username;
+  document.getElementById('spotClass').textContent=s.class||'';
+  document.getElementById('spotScreen').src=s.screenImg||'';
+  document.getElementById('spotCam').src=s.camImg||'';
+  document.getElementById('spotlightOverlay').classList.add('open');
+}
+function closeSpotlight(){ document.getElementById('spotlightOverlay').classList.remove('open'); currentSpotlight=null; }
+document.getElementById('spotlightOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSpotlight();});
+
+// ── CHAT ──
+function addChatMsg(m){
+  const isTeacher=m.role==='teacher';
+  const div=document.createElement('div');
+  div.className='chat-msg'+(isTeacher?' teacher':'');
+  div.innerHTML=`<div class="cm-avatar">${isTeacher?'👨‍🏫':(m.sender||'S')[0].toUpperCase()}</div>
+    <div class="cm-bubble ${isTeacher?'teacher':'student'}">
+      <div class="cm-name">${esc(m.sender||'Unknown')} · ${new Date(m.timestamp||Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+      ${esc(m.text)}
+    </div>`;
+  const c=document.getElementById('chatMessages');
+  c.appendChild(div); c.scrollTop=c.scrollHeight;
+}
+function sendChat(){ const t=document.getElementById('chatInput').value.trim(); if(!t) return; send({type:'CHAT_MSG',text:t}); document.getElementById('chatInput').value=''; }
+function sendAnnouncement(){ const t=document.getElementById('annInput').value.trim(); if(!t) return; send({type:'ANNOUNCEMENT',text:t}); document.getElementById('annInput').value=''; toast('Announcement sent','📢'); }
+function addAnnouncement(data){
+  const bar=document.createElement('div');
+  bar.className='announcement-bar';
+  bar.innerHTML=`📢 <strong>${esc(data.text)}</strong>`;
+  document.getElementById('chatMessages').appendChild(bar);
+  document.getElementById('chatMessages').scrollTop=9999;
+}
+function renderPinned(msgs){
+  const bar=document.getElementById('pinnedBar');
+  if(msgs.length>0){ bar.style.display='block'; document.getElementById('pinnedText').textContent=msgs.map(m=>m.text).join(' · '); }
+  else bar.style.display='none';
+}
+
+// ── POLLS ──
+function createPoll(){
+  const q=document.getElementById('pollQ').value.trim();
+  const opts=document.getElementById('pollOpts').value.split('|').map(s=>s.trim()).filter(Boolean);
+  const correct=document.getElementById('pollCorrect').value.trim();
+  if(!q||opts.length<2){ toast('Add question and at least 2 options','⚠️'); return; }
+  send({type:'POLL_CREATE',data:{question:q,options:opts,correctAnswer:correct||null}});
+  document.getElementById('pollQ').value=''; document.getElementById('pollOpts').value=''; document.getElementById('pollCorrect').value='';
+  toast('Poll launched!','📊');
+}
+function renderPolls(){
+  const list=document.getElementById('pollsList');
+  list.innerHTML='';
+  for(const poll of pollsMap.values()){
+    const totalAnswers=Object.keys(poll.answers||{}).length;
+    const counts={};
+    (poll.options||[]).forEach(o=>counts[o]=0);
+    Object.values(poll.answers||{}).forEach(a=>{ if(counts[a.answer]!==undefined) counts[a.answer]++; });
+    const div=document.createElement('div');
+    div.className='poll-card';
+    div.innerHTML=`<div class="poll-card-header"><h4>${esc(poll.question)}</h4><span class="poll-badge ${poll.active?'active':'closed'}">${poll.active?'● Active':'Closed'}</span></div>
+      <div class="poll-options">${(poll.options||[]).map(o=>`<div class="poll-option-bar"><span>${esc(o)}</span><div class="poll-bar"><div class="poll-bar-fill" style="width:${totalAnswers>0?Math.round((counts[o]||0)/totalAnswers*100):0}%"></div></div><small>${counts[o]||0}</small></div>`).join('')}</div>
+      <div class="poll-card-footer"><small style="font-size:11px;color:var(--text3);">${totalAnswers} response${totalAnswers!==1?'s':''}</small>${poll.active?`<button class="btn-close-poll" onclick="send({type:'POLL_CLOSE',pollId:'${poll.id}'})">Close Poll</button>`:''}</div>`;
+    list.appendChild(div);
+  }
+}
+
+// ── PTT ──
+async function startPTT(){
+  if(selectedIds.size===0){ toast('Select students first','⚠️'); return; }
+  if(!audioStreamGlobal) audioStreamGlobal=await navigator.mediaDevices.getUserMedia({audio:true});
+  document.getElementById('pttBtn').classList.add('recording');
+  pttRecorder=new MediaRecorder(audioStreamGlobal,{mimeType:'audio/webm'});
+  let chunks=[];
+  pttRecorder.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data); };
+  pttRecorder.onstop=()=>{
+    const blob=new Blob(chunks,{type:'audio/webm'});
+    const reader=new FileReader();
+    reader.onloadend=()=>{ send({type:'AUDIO_BROADCAST',targetStudentIds:Array.from(selectedIds),audioData:reader.result.split(',')[1]}); addLog(`Broadcast audio to ${selectedIds.size} student(s)`,'action'); };
+    reader.readAsDataURL(blob);
+  };
+  pttRecorder.start(100);
+}
+function stopPTT(){
+  if(pttRecorder&&pttRecorder.state==='recording'){ pttRecorder.stop(); document.getElementById('pttBtn').classList.remove('recording'); }
+}
+
+// ── LOGS ──
+function addLog(msg,type='info'){
+  const t=document.getElementById('logTerminal');
+  const div=document.createElement('div');
+  div.className=`log-line ${type}`;
+  div.dataset.type=type;
+  div.innerHTML=`<span class="time">${new Date().toLocaleTimeString()}</span><span class="msg">${esc(msg)}</span>`;
+  t.appendChild(div); t.scrollTop=t.scrollHeight;
+  filterLog(currentLogFilter);
+}
+function filterLog(f,btn){
+  currentLogFilter=f;
+  document.querySelectorAll('.log-filter button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.log-line').forEach(l=>{ l.style.display=(f==='all'||l.dataset.type===f)?'':'none'; });
+}
+
+// ── MISC ──
+function switchPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`panel${name.charAt(0).toUpperCase()+name.slice(1)}`).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`.nav-item[data-panel="${name}"]`).classList.add('active');
+}
+function setGridView(mode){
+  const grid=document.getElementById('studentsGrid');
+  grid.classList.toggle('list-mode',mode==='list');
+  document.getElementById('viewGrid').classList.toggle('active',mode==='grid');
+  document.getElementById('viewList').classList.toggle('active',mode==='list');
+}
+function updateDropdown(){
+  const sel=document.getElementById('logStudentSelect');
+  sel.innerHTML=Array.from(studentsMap.values()).map(s=>`<option value="${s.id}">${esc(s.username)}</option>`).join('');
+}
+function fetchLog(){ const sid=document.getElementById('logStudentSelect').value; if(sid) send({type:'GET_SESSION_LOG',studentId:sid}); }
+function esc(s){ if(!s) return ''; return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+function toast(msg,icon='',dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=(icon?icon+' ':'')+msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// Search
+document.getElementById('searchInput').addEventListener('input',render);
+// Config checkboxes
+document.getElementById('allowChatChk').addEventListener('change',()=>syncConfig());
+document.getElementById('allowReactChk').addEventListener('change',()=>syncConfig());
+// Keyboard shortcut: Escape closes spotlight
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSpotlight(); });
+</script>
+</body>
+</html>

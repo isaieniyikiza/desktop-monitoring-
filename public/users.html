@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduLive — Student Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #fafafa;
+  --surface: #f5f6fa;
+  --surface2: #eef0f8;
+  --border: #e8eaf2;
+  --border2: #d6d9e8;
+  --accent: #4338ca;
+  --accent-mid: #5b50d6;
+  --accent2: #7c3aed;
+  --accent-soft: #ede9ff;
+  --accent-glow: rgba(67,56,202,0.12);
+  --text: #0d0f1a;
+  --text2: #525769;
+  --text3: #9196ab;
+  --green: #059669;
+  --green-soft: #d1fae5;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --yellow: #d97706;
+  --yellow-soft: #fef3c7;
+  --blue: #2563eb;
+  --blue-soft: #dbeafe;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04), 0 2px 8px rgba(0,0,0,.04);
+  --shadow: 0 1px 3px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-lg: 0 4px 6px rgba(0,0,0,.04), 0 16px 48px rgba(67,56,202,.1);
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-lg: 20px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { 
+  font-family:'Plus Jakarta Sans',sans-serif; 
+  background:var(--bg); 
+  color:var(--text); 
+  min-height:100vh; 
+  display:flex; 
+  flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text3); }
+
+/* ── TOPBAR ── */
+.topbar { 
+  height:58px; 
+  border-bottom:1px solid var(--border); 
+  display:flex; 
+  align-items:center; 
+  padding:0 28px; 
+  gap:14px; 
+  position:sticky; 
+  top:0; 
+  background:rgba(255,255,255,0.9); 
+  backdrop-filter:blur(16px);
+  z-index:100; 
+}
+.topbar-logo { display:flex; align-items:center; gap:10px; }
+.logo-mark { 
+  width:34px; height:34px; 
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%); 
+  border-radius:10px; 
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 8px rgba(67,56,202,.3);
+}
+.logo-mark svg { width:18px; height:18px; stroke:#fff; }
+.logo-text { font-size:16px; font-weight:800; letter-spacing:-.4px; }
+.logo-text span { color:var(--accent); }
+.logo-beta { 
+  font-size:9px; font-weight:700; 
+  padding:2px 6px; border-radius:4px; 
+  background:var(--accent-soft); color:var(--accent); 
+  letter-spacing:.5px; text-transform:uppercase;
+  margin-top:1px;
+}
+.topbar-sep { flex:1; }
+.topbar-actions { display:flex; align-items:center; gap:10px; }
+.status-badge { 
+  display:flex; align-items:center; gap:6px; 
+  font-size:11.5px; font-weight:700; 
+  padding:5px 12px; border-radius:99px; 
+  background:var(--surface); color:var(--text3); 
+  border:1px solid var(--border); 
+  letter-spacing:.1px;
+  transition:all .3s;
+}
+.status-badge.live { background:var(--red-soft); color:var(--red); border-color:#fca5a5; }
+.status-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.status-badge.live .status-dot { animation:pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+/* ── MAIN ── */
+main { flex:1; display:flex; align-items:center; justify-content:center; padding:32px 20px; }
+
+/* ─────────────────────────────────────────
+   LOGIN CARD
+───────────────────────────────────────── */
+.login-card { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:24px; 
+  width:100%; max-width:460px; 
+  box-shadow:var(--shadow-lg); 
+  overflow:hidden;
+  animation:slideUp .5s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+.card-top { 
+  background:linear-gradient(145deg,#3730a3 0%,#4f46e5 45%,#7c3aed 100%); 
+  padding:40px 36px 36px; 
+  position:relative; overflow:hidden;
+}
+.card-top::before {
+  content:''; position:absolute; inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.card-top::after {
+  content:''; position:absolute;
+  width:180px; height:180px;
+  background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);
+  top:-40px; right:-40px; border-radius:50%;
+}
+.card-top-icon { 
+  width:60px; height:60px; 
+  background:rgba(255,255,255,.15); 
+  border-radius:18px; 
+  display:flex; align-items:center; justify-content:center; 
+  margin-bottom:18px;
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(8px);
+  position:relative; z-index:1;
+}
+.card-top-icon svg { width:28px; height:28px; stroke:#fff; }
+.card-top h1 { font-size:22px; font-weight:800; color:#fff; letter-spacing:-.5px; position:relative; z-index:1; }
+.card-top p { font-size:13.5px; color:rgba(255,255,255,.7); margin-top:5px; position:relative; z-index:1; line-height:1.5; }
+
+.card-body { padding:32px 36px; }
+
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-group { margin-bottom:22px; }
+.form-label { 
+  display:flex; align-items:center; gap:6px; 
+  font-size:12px; font-weight:700; 
+  color:var(--text2); 
+  margin-bottom:8px; 
+  text-transform:uppercase; letter-spacing:.6px;
+}
+.form-label svg { width:13px; height:13px; opacity:.7; }
+.form-input { 
+  width:100%; 
+  border:1.5px solid var(--border); 
+  border-radius:var(--radius-sm); 
+  padding:11px 14px; 
+  font-family:inherit; font-size:14.5px; 
+  color:var(--text); 
+  background:var(--surface); 
+  transition:all .2s;
+  outline:none;
+}
+.form-input:focus { 
+  border-color:var(--accent); 
+  background:#fff; 
+  box-shadow:0 0 0 3px var(--accent-glow); 
+}
+.form-input::placeholder { color:var(--text3); font-size:13.5px; }
+
+/* Avatar picker */
+.avatar-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:10px; }
+.avatar-btn { 
+  aspect-ratio:1; 
+  border-radius:10px; 
+  cursor:pointer; 
+  display:flex; align-items:center; justify-content:center; 
+  font-size:19px; 
+  border:2px solid transparent; 
+  background:var(--surface); 
+  transition:all .15s ease;
+  user-select:none;
+}
+.avatar-btn:hover { transform:scale(1.08); background:var(--surface2); }
+.avatar-btn.sel { 
+  border-color:var(--accent); 
+  background:var(--accent-soft); 
+  box-shadow:0 0 0 3px var(--accent-glow);
+  transform:scale(1.05);
+}
+
+/* Device chips */
+.device-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+.device-chip { 
+  display:flex; align-items:center; justify-content:center; gap:5px; 
+  font-size:11.5px; font-weight:600; 
+  padding:9px 8px; border-radius:9px; 
+  background:var(--surface); color:var(--text3); 
+  border:1px solid var(--border); 
+  transition:all .3s;
+}
+.device-chip svg { width:13px; height:13px; }
+.device-chip.ok { color:var(--green); background:var(--green-soft); border-color:#6ee7b7; }
+.device-chip.checking { color:var(--yellow); background:var(--yellow-soft); border-color:#fcd34d; }
+
+/* CTA */
+.btn-join { 
+  width:100%; padding:15px; 
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%); 
+  color:#fff; border:none; 
+  border-radius:var(--radius-sm); 
+  font-family:inherit; font-size:15px; font-weight:800; 
+  cursor:pointer; 
+  display:flex; align-items:center; justify-content:center; gap:8px; 
+  transition:all .2s ease; 
+  letter-spacing:-.2px;
+  margin-top:4px;
+  box-shadow:0 4px 12px rgba(67,56,202,.3);
+}
+.btn-join:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(67,56,202,.4); }
+.btn-join:active { transform:none; box-shadow:none; }
+.btn-join svg { width:17px; height:17px; }
+
+.card-footer { 
+  padding:14px 36px 20px;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  font-size:12px; color:var(--text3);
+  border-top:1px solid var(--border);
+}
+.card-footer svg { width:13px; height:13px; }
+
+/* ─────────────────────────────────────────
+   STUDIO PANEL
+───────────────────────────────────────── */
+.studio { 
+  display:none; 
+  flex-direction:column; 
+  width:100%; max-width:1180px; 
+  gap:18px;
+  animation:fadeIn .4s ease both;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+/* ── STUDIO HEADER ── */
+.studio-header { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius); 
+  padding:14px 20px; 
+  box-shadow:var(--shadow-sm);
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.student-info { display:flex; align-items:center; gap:14px; }
+.stu-avatar { 
+  width:46px; height:46px; 
+  border-radius:12px; 
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); 
+  display:flex; align-items:center; justify-content:center; 
+  font-size:23px;
+  box-shadow:0 2px 8px rgba(67,56,202,.25);
+  flex-shrink:0;
+}
+.stu-name { font-size:15px; font-weight:800; letter-spacing:-.3px; }
+.stu-class { font-size:12px; color:var(--text2); margin-top:1px; font-weight:500; }
+.stu-id { font-size:10.5px; color:var(--text3); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+
+.hdr-controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+/* Toggle */
+.toggle-group { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--text2); }
+.sw { position:relative; width:40px; height:22px; }
+.sw input { position:absolute; opacity:0; width:0; height:0; }
+.sw-track { 
+  position:absolute; inset:0; 
+  background:#d1d5db; border-radius:99px; 
+  cursor:pointer; transition:background .2s; 
+}
+.sw input:checked~.sw-track { background:var(--accent); }
+.sw-thumb { 
+  position:absolute; top:3px; left:3px; 
+  width:16px; height:16px; 
+  border-radius:50%; background:#fff; 
+  box-shadow:0 1px 4px rgba(0,0,0,.2); 
+  transition:transform .2s; pointer-events:none;
+}
+.sw input:checked~.sw-thumb { transform:translateX(18px); }
+
+/* Status pill */
+.live-pill { 
+  display:flex; align-items:center; gap:6px; 
+  font-size:12px; font-weight:700; 
+  padding:6px 14px; border-radius:8px; 
+  background:var(--green-soft); color:var(--green); 
+  border:1px solid #6ee7b7;
+}
+.live-dot { width:6px; height:6px; border-radius:50%; background:currentColor; animation:pulse 1.4s infinite; }
+
+/* Buttons */
+.btn-hand { 
+  display:flex; align-items:center; gap:6px; 
+  padding:8px 14px; border-radius:9px; 
+  border:1.5px solid var(--border2); 
+  background:var(--surface); 
+  font-family:inherit; font-size:13px; font-weight:700; 
+  cursor:pointer; color:var(--text); 
+  transition:all .2s; white-space:nowrap;
+}
+.btn-hand:hover { border-color:var(--accent); background:var(--accent-soft); color:var(--accent); }
+.btn-hand.raised { background:var(--yellow-soft); border-color:#fcd34d; color:var(--yellow); }
+
+.btn-class-live { 
+  display:flex; align-items:center; gap:6px; 
+  padding:8px 14px; border-radius:9px; 
+  border:1.5px solid var(--border2); 
+  background:var(--surface); 
+  font-family:inherit; font-size:13px; font-weight:700; 
+  cursor:pointer; color:var(--text);
+  text-decoration:none;
+  transition:all .2s;
+}
+.btn-class-live:hover { border-color:var(--blue); background:var(--blue-soft); color:var(--blue); }
+.btn-class-live svg { width:14px; height:14px; }
+
+.btn-stop { 
+  display:flex; align-items:center; gap:6px; 
+  padding:8px 14px; border-radius:9px; 
+  background:#fff; border:1.5px solid #fca5a5; 
+  color:var(--red); 
+  font-size:13px; font-weight:700; 
+  cursor:pointer; font-family:inherit; 
+  transition:all .15s;
+}
+.btn-stop:hover { background:var(--red-soft); }
+.btn-stop svg { width:14px; height:14px; }
+
+/* ── STATS BAR ── */
+.stats-bar { 
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px; 
+}
+.stat-tile { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius-sm); 
+  padding:14px 16px; 
+  display:flex; align-items:center; gap:12px;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow .2s;
+}
+.stat-tile:hover { box-shadow:var(--shadow); }
+.stat-ico { 
+  width:36px; height:36px; border-radius:9px; 
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.stat-ico svg { width:17px; height:17px; }
+.stat-ico.b { background:var(--blue-soft); color:var(--blue); }
+.stat-ico.p { background:var(--accent-soft); color:var(--accent); }
+.stat-ico.g { background:var(--green-soft); color:var(--green); }
+.stat-ico.y { background:var(--yellow-soft); color:var(--yellow); }
+.stat-val { font-size:20px; font-weight:800; letter-spacing:-.6px; font-family:'JetBrains Mono',monospace; line-height:1; }
+.stat-lbl { font-size:10.5px; color:var(--text3); font-weight:600; margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+
+/* ── MAIN GRID ── */
+.main-grid { display:grid; grid-template-columns:1fr 340px; gap:18px; }
+.main-left { display:flex; flex-direction:column; gap:18px; }
+.main-right { display:flex; flex-direction:column; gap:18px; }
+
+/* ── STREAM CARDS ── */
+.streams-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.stream-card { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius); 
+  overflow:hidden; 
+  box-shadow:var(--shadow-sm);
+}
+.stream-hdr { 
+  display:flex; align-items:center; justify-content:space-between; 
+  padding:11px 14px; 
+  border-bottom:1px solid var(--border); 
+  background:var(--bg);
+}
+.stream-hdr-left { display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:700; color:var(--text2); }
+.stream-hdr-left svg { width:14px; height:14px; }
+.stream-tag { 
+  font-size:10px; font-weight:700; 
+  padding:2px 7px; border-radius:5px; 
+  background:var(--accent-soft); color:var(--accent); 
+  text-transform:uppercase; letter-spacing:.5px;
+}
+.stream-video { width:100%; aspect-ratio:16/9; object-fit:cover; background:#0c0e1a; display:block; }
+.stream-overlay { 
+  position:relative; 
+}
+.stream-overlay::after { 
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, transparent 60%, rgba(0,0,0,.3) 100%);
+  pointer-events:none;
+}
+
+/* ── AUDIO METER ── */
+.audio-card { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius-sm); 
+  padding:18px; 
+  box-shadow:var(--shadow-sm);
+}
+.section-hdr { 
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px;
+}
+.section-title { 
+  display:flex; align-items:center; gap:7px; 
+  font-size:11.5px; font-weight:800; 
+  color:var(--text2); 
+  text-transform:uppercase; letter-spacing:.7px;
+}
+.section-title svg { width:13px; height:13px; }
+.meter-wrap { display:flex; gap:2.5px; align-items:flex-end; height:44px; }
+.bar { 
+  flex:1; background:var(--border); 
+  border-radius:3px; 
+  transition:height .06s ease, background .1s; 
+  min-height:4px; max-height:44px;
+}
+.bar.lvl1 { background:linear-gradient(to top,#10b981,#34d399); }
+.bar.lvl2 { background:linear-gradient(to top,#d97706,#fbbf24); }
+.bar.lvl3 { background:linear-gradient(to top,#dc2626,#f87171); }
+.meter-meta { display:flex; justify-content:space-between; margin-top:10px; }
+.meter-meta span { font-size:11.5px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
+
+/* ── RIGHT PANEL ── */
+/* Chat */
+.chat-card { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius); 
+  display:flex; flex-direction:column; 
+  height:360px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+}
+.chat-top { 
+  padding:13px 16px; 
+  border-bottom:1px solid var(--border); 
+  display:flex; align-items:center; justify-content:space-between;
+}
+.chat-title { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:800; }
+.chat-title svg { width:15px; height:15px; color:var(--accent); }
+.chat-count { 
+  font-size:10px; font-weight:700; 
+  padding:2px 7px; border-radius:99px; 
+  background:var(--accent-soft); color:var(--accent);
+}
+.chat-body { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:9px; }
+.msg { display:flex; gap:8px; }
+.msg-ava { 
+  width:26px; height:26px; border-radius:7px; 
+  background:var(--surface); color:var(--accent); 
+  display:flex; align-items:center; justify-content:center; 
+  font-size:12px; font-weight:800; flex-shrink:0;
+}
+.msg-ava.teacher { background:var(--accent-soft); }
+.msg-bubble { 
+  background:var(--surface); 
+  border-radius:10px; 
+  padding:8px 12px; 
+  font-size:13px; 
+  max-width:86%; line-height:1.45;
+}
+.msg-bubble.teacher { background:var(--accent-soft); }
+.msg-name { font-size:10.5px; font-weight:800; color:var(--accent); margin-bottom:2px; display:block; }
+.msg-time { font-size:10px; color:var(--text3); margin-top:3px; display:block; font-family:'JetBrains Mono',monospace; }
+.chat-input-bar { 
+  border-top:1px solid var(--border); 
+  padding:10px 12px; 
+  display:flex; gap:8px;
+  background:var(--bg);
+}
+.chat-ipt { 
+  flex:1; 
+  border:1.5px solid var(--border); 
+  border-radius:9px; 
+  padding:9px 13px; 
+  font-family:inherit; font-size:13px; 
+  outline:none; background:var(--surface); 
+  color:var(--text);
+  transition:all .2s;
+}
+.chat-ipt:focus { border-color:var(--accent); background:#fff; }
+.chat-send { 
+  background:var(--accent); color:#fff; 
+  border:none; border-radius:9px; 
+  width:36px; 
+  display:flex; align-items:center; justify-content:center; 
+  cursor:pointer; transition:background .15s; flex-shrink:0;
+}
+.chat-send:hover { background:var(--accent2); }
+.chat-send svg { width:14px; height:14px; }
+
+/* Quick Actions Panel */
+.actions-card { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius-sm); 
+  padding:16px; 
+  box-shadow:var(--shadow-sm);
+}
+.actions-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.action-btn { 
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:12px 8px;
+  border-radius:9px;
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  font-family:inherit; font-size:11px; font-weight:700;
+  cursor:pointer; color:var(--text2);
+  transition:all .2s; text-align:center;
+}
+.action-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+.action-btn.active { border-color:var(--yellow); color:var(--yellow); background:var(--yellow-soft); }
+.action-btn.danger { border-color:#fca5a5; color:var(--red); background:var(--red-soft); }
+.action-btn span.icon { font-size:20px; line-height:1; }
+.action-btn.hand-btn { grid-column:1/-1; flex-direction:row; padding:12px 16px; font-size:13px; justify-content:center; gap:8px; }
+.action-btn.hand-btn.raised { border-color:#fcd34d; color:var(--yellow); background:var(--yellow-soft); }
+
+/* Connection quality */
+.quality-card { 
+  background:var(--bg); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius-sm); 
+  padding:16px; 
+  box-shadow:var(--shadow-sm);
+}
+.quality-bars { display:flex; align-items:flex-end; gap:4px; height:24px; margin-top:12px; }
+.q-bar { flex:1; border-radius:3px; background:var(--border); transition:all .5s ease; }
+.q-bar.on { background:var(--green); }
+.quality-label { display:flex; justify-content:space-between; margin-top:8px; }
+.quality-label span { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
+.q-status { font-size:11px; font-weight:700; color:var(--green); }
+
+/* ── NOTIFICATION TOAST ── */
+.toast { 
+  position:fixed; top:72px; left:50%; transform:translateX(-50%) translateY(-4px); 
+  background:#fff; 
+  border:1px solid var(--border); 
+  border-radius:12px; 
+  padding:12px 20px; 
+  font-size:13.5px; font-weight:600; 
+  box-shadow:0 8px 32px rgba(0,0,0,.12); 
+  z-index:999; 
+  display:flex; align-items:center; gap:10px;
+  animation:toastIn .35s cubic-bezier(.22,1,.36,1);
+  max-width:480px; text-align:center;
+}
+.toast.info { border-left:4px solid var(--accent); }
+.toast.success { border-left:4px solid var(--green); }
+.toast.warning { border-left:4px solid var(--yellow); }
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(-12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+/* ── ANNOUNCEMENT BANNER ── */
+.announcement-bar { 
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); 
+  color:#fff; 
+  padding:10px 20px; 
+  font-size:13.5px; font-weight:700; 
+  display:flex; align-items:center; gap:10px;
+  animation:slideDown .4s ease;
+  border-radius:var(--radius-sm);
+  margin-bottom:8px;
+}
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── MODAL ── */
+.modal-overlay { 
+  position:fixed; inset:0; 
+  background:rgba(0,0,0,.4); 
+  backdrop-filter:blur(6px);
+  z-index:200; 
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  animation:fadeIn .2s ease;
+}
+.modal { 
+  background:#fff; 
+  border-radius:var(--radius-lg); 
+  padding:32px; 
+  width:100%; max-width:420px;
+  box-shadow:0 24px 80px rgba(0,0,0,.18);
+  animation:slideUp .3s cubic-bezier(.22,1,.36,1);
+}
+.modal h3 { font-size:18px; font-weight:800; margin-bottom:8px; letter-spacing:-.3px; }
+.modal p { font-size:13.5px; color:var(--text2); line-height:1.6; margin-bottom:20px; }
+.modal-actions { display:flex; gap:10px; }
+.btn-modal-cancel { 
+  flex:1; padding:11px; 
+  border-radius:9px; border:1.5px solid var(--border2); 
+  background:var(--surface); 
+  font-family:inherit; font-size:13.5px; font-weight:700; 
+  cursor:pointer; color:var(--text2);
+}
+.btn-modal-confirm { 
+  flex:1; padding:11px; 
+  border-radius:9px; border:none; 
+  background:var(--red); 
+  font-family:inherit; font-size:13.5px; font-weight:700; 
+  cursor:pointer; color:#fff;
+  transition:background .15s;
+}
+.btn-modal-confirm:hover { background:#b91c1c; }
+
+/* ── FOCUS CHECK ── */
+.focus-banner { 
+  background:var(--yellow-soft); 
+  border:2px solid #fcd34d;
+  border-radius:var(--radius-sm); 
+  padding:14px 18px; 
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.focus-banner p { font-size:13.5px; font-weight:600; flex:1; }
+.focus-actions { display:flex; gap:8px; }
+.btn-focus { 
+  padding:7px 14px; border-radius:8px; 
+  font-family:inherit; font-size:12.5px; font-weight:700; 
+  cursor:pointer; border:none; transition:all .15s;
+}
+.btn-focus.yes { background:var(--green); color:#fff; }
+.btn-focus.no { background:var(--red); color:#fff; }
+
+/* ── RECORDING INDICATOR ── */
+.rec-badge { 
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:700;
+  padding:3px 8px; border-radius:5px;
+  background:var(--red-soft); color:var(--red);
+  text-transform:uppercase; letter-spacing:.5px;
+  border:1px solid #fca5a5;
+}
+.rec-badge .rec-dot { width:6px; height:6px; border-radius:50%; background:var(--red); animation:pulse 1s infinite; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px) {
+  .main-grid { grid-template-columns:1fr; }
+  .main-right { flex-direction:row; flex-wrap:wrap; }
+  .chat-card { height:280px; flex:1; min-width:280px; }
+  .actions-card,.quality-card { flex:1; min-width:200px; }
+}
+@media(max-width:768px) {
+  .stats-bar { grid-template-columns:1fr 1fr; }
+  .streams-grid { grid-template-columns:1fr; }
+  .studio-header { flex-direction:column; align-items:flex-start; }
+  .hdr-controls { flex-wrap:wrap; }
+  .card-body { padding:24px; }
+  .card-top { padding:28px 24px; }
+  .form-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-mark">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+    </div>
+    <span class="logo-text">Edu<span>Live</span></span>
+    <span class="logo-beta">Student</span>
+  </div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-actions">
+    <div id="topbarStatus" class="status-badge">
+      <span class="status-dot"></span> Offline
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ─── LOGIN CARD ─── -->
+<div id="loginCard" class="login-card">
+  <div class="card-top">
+    <div class="card-top-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+    </div>
+    <h1>Join Live Session</h1>
+    <p>Share your screen, camera &amp; voice with your teacher in real time</p>
+  </div>
+  <div class="card-body">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          Full Name
+        </label>
+        <input id="nameInput" class="form-input" type="text" placeholder="Jean Paul Habimana" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+          Class
+        </label>
+        <input id="classInput" class="form-input" type="text" placeholder="S6 — Mathematics" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/></svg>
+        Choose Your Avatar
+      </label>
+      <div class="avatar-grid" id="avatarGrid"></div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Device Check
+      </label>
+      <div class="device-row">
+        <div class="device-chip checking" id="camChip">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          Camera
+        </div>
+        <div class="device-chip checking" id="micChip">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 3a4 4 0 014 4v4a4 4 0 11-8 0V7a4 4 0 014-4z"/></svg>
+          Microphone
+        </div>
+        <div class="device-chip checking" id="scrChip">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Screen
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-join" onclick="startStreaming()" style="margin-top:24px;">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Join Session — Start Streaming
+    </button>
+  </div>
+  <div class="card-footer">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    Your data is streamed securely to your teacher only
+  </div>
+</div>
+
+<!-- ─── STUDIO PANEL ─── -->
+<div id="studioPanel" class="studio">
+
+  <!-- Announcement area -->
+  <div id="announcementArea"></div>
+  <div id="focusArea"></div>
+
+  <!-- Header -->
+  <div class="studio-header">
+    <div class="student-info">
+      <div id="hdrAvatar" class="stu-avatar">🐯</div>
+      <div>
+        <div class="stu-name" id="hdrName">—</div>
+        <div class="stu-class" id="hdrClass">—</div>
+        <div class="stu-id" id="hdrId">Connecting...</div>
+      </div>
+    </div>
+    <div class="hdr-controls">
+      <label class="toggle-group">
+        <div class="sw"><input type="checkbox" id="camToggle" checked><span class="sw-track"></span><span class="sw-thumb"></span></div>
+        Camera
+      </label>
+      <label class="toggle-group">
+        <div class="sw"><input type="checkbox" id="micToggle" checked><span class="sw-track"></span><span class="sw-thumb"></span></div>
+        Mic
+      </label>
+      <div class="live-pill" id="connStatus">
+        <span class="live-dot"></span> Live
+      </div>
+      <a href="camera.html" target="_blank" class="btn-class-live">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        Class Live
+      </a>
+      <button class="btn-stop" onclick="confirmStop()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+        Stop
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-tile">
+      <div class="stat-ico b"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <div><div class="stat-val" id="statDuration">0:00</div><div class="stat-lbl">Duration</div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-ico p"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg></div>
+      <div><div class="stat-val" id="statFps">10</div><div class="stat-lbl">FPS</div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-ico g"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 3a4 4 0 014 4v4a4 4 0 11-8 0V7a4 4 0 014-4z"/></svg></div>
+      <div><div class="stat-val" id="statAudio">—</div><div class="stat-lbl">Audio</div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-ico y"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+      <div><div class="stat-val" id="statFrames">0</div><div class="stat-lbl">Frames</div></div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <div class="main-left">
+
+      <!-- Streams -->
+      <div class="streams-grid">
+        <div class="stream-card">
+          <div class="stream-hdr">
+            <div class="stream-hdr-left">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              Screen Share
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span id="recBadge" style="display:none" class="rec-badge"><span class="rec-dot"></span> REC</span>
+              <span class="stream-tag">1080p</span>
+            </div>
+          </div>
+          <div class="stream-overlay"><video id="screenVideo" class="stream-video" autoplay muted playsinline></video></div>
+        </div>
+        <div class="stream-card">
+          <div class="stream-hdr">
+            <div class="stream-hdr-left">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Camera Feed
+            </div>
+            <span class="stream-tag">HD</span>
+          </div>
+          <div class="stream-overlay"><video id="cameraVideo" class="stream-video" autoplay muted playsinline></video></div>
+        </div>
+      </div>
+
+      <!-- Audio Meter -->
+      <div class="audio-card">
+        <div class="section-hdr">
+          <div class="section-title">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+            Microphone Level
+          </div>
+          <span id="meterStatusBadge" class="rec-badge" style="background:var(--green-soft);color:var(--green);border-color:#6ee7b7;">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite;display:inline-block;"></span> Active
+          </span>
+        </div>
+        <div class="meter-wrap" id="meterBars"></div>
+        <div class="meter-meta">
+          <span id="meterDb">–∞ dB</span>
+          <span id="meterStatus">Microphone active</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="main-right">
+
+      <!-- Chat -->
+      <div class="chat-card">
+        <div class="chat-top">
+          <div class="chat-title">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            Class Chat
+          </div>
+          <span class="chat-count" id="chatCount">0</span>
+        </div>
+        <div class="chat-body" id="chatMsgs"></div>
+        <div class="chat-input-bar">
+          <input id="chatInput" class="chat-ipt" placeholder="Message your teacher..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="chat-send" onclick="sendChat()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="actions-card">
+        <div class="section-title">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Quick Actions
+        </div>
+        <div class="actions-grid">
+          <button class="action-btn hand-btn" id="handBtn" onclick="toggleHand()">
+            <span>✋</span> Raise Hand
+          </button>
+          <button class="action-btn" onclick="sendReaction('👍')"><span class="icon">👍</span>Thumbs Up</button>
+          <button class="action-btn" onclick="sendReaction('❓')"><span class="icon">❓</span>Question</button>
+          <button class="action-btn" onclick="sendReaction('✅')"><span class="icon">✅</span>Got It</button>
+          <button class="action-btn" onclick="sendReaction('🔄')"><span class="icon">🔄</span>Repeat That</button>
+        </div>
+      </div>
+
+      <!-- Connection Quality -->
+      <div class="quality-card">
+        <div class="section-title">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+          Connection Quality
+        </div>
+        <div class="quality-bars" id="qualityBars">
+          <div class="q-bar" style="height:30%"></div>
+          <div class="q-bar" style="height:50%"></div>
+          <div class="q-bar" style="height:70%"></div>
+          <div class="q-bar" style="height:90%"></div>
+          <div class="q-bar" style="height:100%"></div>
+        </div>
+        <div class="quality-label">
+          <span id="latencyLabel">—</span>
+          <span class="q-status" id="qualityStatus">Connecting...</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /studio -->
+</main>
+
+<!-- STOP CONFIRM MODAL -->
+<div id="stopModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3>Leave this session?</h3>
+    <p>Your screen, camera, and microphone streams will stop. Your teacher will be notified that you've left the session.</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Stay in Session</button>
+      <button class="btn-modal-confirm" onclick="stopStreaming()">Leave Session</button>
+    </div>
+  </div>
+</div>
+
+<audio id="teacherAudio" autoplay></audio>
+
+<script>
+// ── STATE ──
+let ws=null, studentId=null, screenStream=null, cameraStream=null;
+let screenInterval=null, cameraInterval=null, audioCtx=null;
+let selectedAvatar='🐯', handRaised=false, frameCount=0;
+let startTime=null, durationInterval=null, chatMsgCount=0;
+
+// ── AVATARS ──
+const AVATARS = ['🐯','🦊','🐼','🦁','🐸','🦋','🐙','🦄','🌟','🎯','🚀','🎨'];
+const avatarGrid = document.getElementById('avatarGrid');
+AVATARS.forEach(a => {
+  const btn = document.createElement('button');
+  btn.className = 'avatar-btn' + (a==='🐯'?' sel':'');
+  btn.textContent = a;
+  btn.type = 'button';
+  btn.onclick = () => {
+    document.querySelectorAll('.avatar-btn').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel');
+    selectedAvatar = a;
+  };
+  avatarGrid.appendChild(btn);
+});
+
+// ── METER BARS ──
+const meterBarsEl = document.getElementById('meterBars');
+for(let i=0;i<36;i++){
+  const b=document.createElement('div');
+  b.className='bar';
+  meterBarsEl.appendChild(b);
+}
+
+// ── DEVICE CHECK ──
+navigator.mediaDevices.enumerateDevices().then(devices=>{
+  const hasVid=devices.some(d=>d.kind==='videoinput');
+  const hasAud=devices.some(d=>d.kind==='audioinput');
+  if(hasVid){
+    document.getElementById('camChip').className='device-chip ok';
+    document.getElementById('scrChip').className='device-chip ok';
+  }
+  if(hasAud) document.getElementById('micChip').className='device-chip ok';
+}).catch(()=>{});
+
+// ── CONNECTION QUALITY ANIMATION ──
+let pingStart=0, latency=0;
+function updateQuality(ms){
+  const bars=document.querySelectorAll('.q-bar');
+  const good = ms<80, ok = ms<200;
+  const count = good?5:ok?3:2;
+  const color = good?'var(--green)':ok?'var(--yellow)':'var(--red)';
+  bars.forEach((b,i)=>{ b.style.background=i<count?color:'var(--border)'; });
+  document.getElementById('qualityStatus').textContent = good?'Excellent':ok?'Good':'Poor';
+  document.getElementById('qualityStatus').style.color = good?'var(--green)':ok?'var(--yellow)':'var(--red)';
+  document.getElementById('latencyLabel').textContent = ms+'ms';
+}
+
+// ── START STREAMING ──
+async function startStreaming(){
+  const name=document.getElementById('nameInput').value.trim();
+  const cls=document.getElementById('classInput').value.trim();
+  if(!name||!cls){ showToast('Please enter your name and class first', 'warning'); return; }
+
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('studioPanel').style.display='flex';
+  document.getElementById('hdrName').textContent=name;
+  document.getElementById('hdrClass').textContent=cls;
+  document.getElementById('hdrAvatar').textContent=selectedAvatar;
+  document.getElementById('topbarStatus').className='status-badge live';
+  document.getElementById('topbarStatus').innerHTML='<span class="status-dot"></span> Live';
+
+  startTime=Date.now();
+  durationInterval=setInterval(()=>{
+    const s=Math.floor((Date.now()-startTime)/1000);
+    document.getElementById('statDuration').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  },1000);
+
+  // WebSocket
+  const wsUrl=`ws://localhost:8080/?role=student&username=${encodeURIComponent(name)}&class=${encodeURIComponent(cls)}&avatar=${encodeURIComponent(selectedAvatar)}`;
+  ws=new WebSocket(wsUrl);
+
+  ws.onopen=()=>{
+    document.getElementById('connStatus').innerHTML='<span class="live-dot"></span> Live';
+    pingStart=Date.now();
+    ws.send(JSON.stringify({type:'PING'}));
+    showToast('Connected to session', 'success');
+    // Simulate latency updates
+    setInterval(()=>{ pingStart=Date.now(); if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'PING'})); }, 5000);
+  };
+
+  ws.onmessage=(e)=>{
+    if(typeof e.data==='string'){
+      let msg;
+      try{ msg=JSON.parse(e.data); } catch(_){ return; }
+      handleMessage(msg);
+    }
+  };
+
+  ws.onclose=()=>{
+    document.getElementById('connStatus').innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span> Disconnected';
+    document.getElementById('connStatus').style.background='var(--red-soft)';
+    document.getElementById('connStatus').style.color='var(--red)';
+    document.getElementById('connStatus').style.borderColor='#fca5a5';
+  };
+
+  ws.onerror=()=>{ showToast('Connection error — retrying...','warning'); };
+
+  await initMedia();
+  startCaptures();
+}
+
+function handleMessage(msg){
+  switch(msg.type){
+    case 'INFO':
+      studentId=msg.data.id;
+      document.getElementById('hdrId').textContent='Session ID: '+studentId;
+      break;
+    case 'PONG':
+    case 'PING':
+      updateQuality(Date.now()-pingStart);
+      break;
+    case 'CHAT_MSG': addChatMsg(msg.data); break;
+    case 'CHAT_HISTORY': msg.data.forEach(m=>addChatMsg(m)); break;
+    case 'TEACHER_AUDIO': playAudioChunk(msg.data); break;
+    case 'FORCE_MUTE':
+      document.getElementById('micToggle').checked=false;
+      updateMicState(false,'Muted by teacher');
+      showToast('Your microphone was muted by the teacher','warning');
+      break;
+    case 'FORCE_UNMUTE':
+      document.getElementById('micToggle').checked=true;
+      updateMicState(true,'Active');
+      showToast('Your microphone was unmuted by the teacher','info');
+      break;
+    case 'KICKED':
+      showToast('You were removed from this session','warning');
+      setTimeout(()=>doStop(),2000);
+      break;
+    case 'ANNOUNCEMENT': showAnnouncement(msg.data.text); break;
+    case 'FOCUS_CHECK': showFocusCheck(msg.data); break;
+    case 'PRIVATE_MSG': showToast('💬 Teacher: '+msg.text,'info'); break;
+    case 'START_RECORDING':
+      document.getElementById('recBadge').style.display='inline-flex';
+      showToast('Recording started by teacher','warning');
+      break;
+    case 'CALLED_ON': showToast("📢 Your teacher called on you — you're up!",'success'); break;
+    case 'TIMER_UPDATE': handleTimer(msg.data); break;
+  }
+}
+
+function updateMicState(active, label){
+  document.getElementById('meterStatus').textContent=label;
+  document.getElementById('statAudio').textContent=active?'ON':'OFF';
+  const badge=document.getElementById('meterStatusBadge');
+  if(active){
+    badge.style.background='var(--green-soft)'; badge.style.color='var(--green)'; badge.style.borderColor='#6ee7b7';
+    badge.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite;display:inline-block;"></span> Active';
+  } else {
+    badge.style.background='var(--red-soft)'; badge.style.color='var(--red)'; badge.style.borderColor='#fca5a5';
+    badge.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;"></span> Muted';
+  }
+}
+
+function playAudioChunk(b64){
+  try{
+    const bin=atob(b64), bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const blob=new Blob([bytes],{type:'audio/webm'});
+    const url=URL.createObjectURL(blob);
+    const audio=new Audio(url);
+    audio.play().catch(()=>{});
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+  } catch(_){}
+}
+
+// ── MEDIA ──
+async function initMedia(){
+  try {
+    screenStream=await navigator.mediaDevices.getDisplayMedia({video:{width:1920,height:1080},audio:false});
+    document.getElementById('screenVideo').srcObject=screenStream;
+    screenStream.getVideoTracks()[0].onended=()=>doStop();
+  } catch(e){ showToast('Screen share permission denied','warning'); }
+
+  try {
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{width:1280,height:720},audio:false});
+    document.getElementById('cameraVideo').srcObject=cameraStream;
+  } catch(e){ showToast('Camera permission denied','warning'); }
+
+  try {
+    const audioStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx=new AudioContext();
+    const src=audioCtx.createMediaStreamSource(audioStream);
+    const proc=audioCtx.createScriptProcessor(4096,1,1);
+    const analyser=audioCtx.createAnalyser();
+    analyser.fftSize=64;
+    src.connect(analyser);
+    src.connect(proc);
+    proc.connect(audioCtx.destination);
+    const freq=new Uint8Array(analyser.frequencyBinCount);
+    const bars=document.querySelectorAll('.bar');
+
+    let audioActive=true;
+    document.getElementById('micToggle').addEventListener('change',e=>{
+      audioActive=e.target.checked;
+      updateMicState(audioActive, audioActive?'Active':'Muted');
+    });
+
+    proc.onaudioprocess=(e)=>{
+      analyser.getByteFrequencyData(freq);
+      const bCount=bars.length;
+      const step=Math.floor(freq.length/bCount);
+      bars.forEach((b,i)=>{
+        const val=freq[i*step]||0;
+        const pct=(val/255)*100;
+        b.style.height=Math.max(4,pct*0.44)+'px';
+        b.className='bar'+(pct>70?' lvl3':pct>40?' lvl2':pct>5?' lvl1':'');
+      });
+      const rms=freq.reduce((a,v)=>a+v,0)/freq.length;
+      const db=rms>0?Math.round(20*Math.log10(rms/255)):-Infinity;
+      document.getElementById('meterDb').textContent=(db===(-Infinity)?'–∞':db)+' dB';
+      if(!ws||ws.readyState!==WebSocket.OPEN||!audioActive) return;
+      const inp=e.inputBuffer.getChannelData(0);
+      const pcm=new Int16Array(inp.length);
+      for(let i=0;i<inp.length;i++) pcm[i]=Math.max(-32768,Math.min(32767,Math.floor(inp[i]*32768)));
+      ws.send(new Uint8Array([65,...new Uint8Array(pcm.buffer)]));
+    };
+  } catch(e){ showToast('Microphone permission denied','warning'); }
+}
+
+// ── CAPTURES ──
+const canvas=document.createElement('canvas');
+const ctx2d=canvas.getContext('2d');
+function startCaptures(){
+  screenInterval=setInterval(()=>{
+    if(!ws||ws.readyState!==WebSocket.OPEN) return;
+    const v=document.getElementById('screenVideo');
+    if(!v.videoWidth) return;
+    canvas.width=v.videoWidth; canvas.height=v.videoHeight;
+    ctx2d.drawImage(v,0,0);
+    canvas.toBlob(b=>{
+      if(!b) return;
+      b.arrayBuffer().then(buf=>{
+        ws.send(new Uint8Array([83,...new Uint8Array(buf)]));
+        frameCount++;
+        document.getElementById('statFrames').textContent=frameCount;
+      });
+    },'image/jpeg',0.75);
+  },100);
+
+  cameraInterval=setInterval(()=>{
+    if(!ws||ws.readyState!==WebSocket.OPEN) return;
+    const v=document.getElementById('cameraVideo');
+    if(!v.videoWidth) return;
+    canvas.width=v.videoWidth; canvas.height=v.videoHeight;
+    ctx2d.drawImage(v,0,0);
+    canvas.toBlob(b=>{
+      if(!b) return;
+      b.arrayBuffer().then(buf=>{ ws.send(new Uint8Array([67,...new Uint8Array(buf)])); });
+    },'image/jpeg',0.65);
+  },100);
+
+  document.getElementById('camToggle').addEventListener('change',e=>{
+    if(cameraStream) cameraStream.getVideoTracks().forEach(t=>t.enabled=e.target.checked);
+  });
+}
+
+// ── HAND ──
+function toggleHand(){
+  handRaised=!handRaised;
+  if(ws&&ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify({type:'HAND_RAISE',raised:handRaised}));
+  const btn=document.getElementById('handBtn');
+  btn.className='action-btn hand-btn'+(handRaised?' raised':'');
+  btn.innerHTML=handRaised?'<span>✋</span> Hand Raised':'<span>✋</span> Raise Hand';
+  if(handRaised) showToast('Hand raised — your teacher will call on you','success');
+}
+
+// ── REACTIONS ──
+function sendReaction(emoji){
+  if(!ws||ws.readyState!==WebSocket.OPEN) return;
+  ws.send(JSON.stringify({type:'REACTION',emoji}));
+  showToast('Reaction sent: '+emoji,'info');
+}
+
+// ── CHAT ──
+function addChatMsg(m){
+  chatMsgCount++;
+  document.getElementById('chatCount').textContent=chatMsgCount;
+  const time=new Date(m.timestamp||Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const div=document.createElement('div');
+  div.className='msg';
+  div.innerHTML=`<div class="msg-ava${m.role==='teacher'?' teacher':''}">${m.role==='teacher'?'👩‍🏫':(m.sender||'S')[0].toUpperCase()}</div>
+    <div class="msg-bubble${m.role==='teacher'?' teacher':''}">
+      <span class="msg-name">${escapeHTML(m.sender)}</span>
+      ${escapeHTML(m.text)}
+      <span class="msg-time">${time}</span>
+    </div>`;
+  document.getElementById('chatMsgs').appendChild(div);
+  document.getElementById('chatMsgs').scrollTop=99999;
+}
+
+function escapeHTML(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function sendChat(){
+  const t=document.getElementById('chatInput').value.trim();
+  if(!t||!ws||ws.readyState!==WebSocket.OPEN) return;
+  ws.send(JSON.stringify({type:'CHAT_MSG',text:t}));
+  document.getElementById('chatInput').value='';
+}
+
+// ── ANNOUNCEMENT ──
+function showAnnouncement(text){
+  const area=document.getElementById('announcementArea');
+  const div=document.createElement('div');
+  div.className='announcement-bar';
+  div.innerHTML='📢 <strong>Announcement:</strong> '+escapeHTML(text);
+  const close=document.createElement('button');
+  close.textContent='✕';
+  close.style.cssText='background:none;border:none;color:#fff;cursor:pointer;font-size:16px;padding:0 0 0 12px;opacity:.7;';
+  close.onclick=()=>div.remove();
+  div.appendChild(close);
+  area.appendChild(div);
+  setTimeout(()=>{ if(div.parentNode)div.remove(); },8000);
+}
+
+// ── FOCUS CHECK ──
+function showFocusCheck(data){
+  const area=document.getElementById('focusArea');
+  area.innerHTML='';
+  const div=document.createElement('div');
+  div.className='focus-banner';
+  div.innerHTML=`<p>🎯 <strong>Focus Check:</strong> ${escapeHTML(data.question||'Are you following along?')}</p>
+    <div class="focus-actions">
+      <button class="btn-focus yes" onclick="respondFocus(true,'${data.checkId||''}')">✅ Yes</button>
+      <button class="btn-focus no" onclick="respondFocus(false,'${data.checkId||''}')">❌ No</button>
+    </div>`;
+  area.appendChild(div);
+}
+function respondFocus(yes,checkId){
+  if(ws&&ws.readyState===WebSocket.OPEN)
+    ws.send(JSON.stringify({type:'FOCUS_RESPONSE',response:yes?'yes':'no',checkId}));
+  document.getElementById('focusArea').innerHTML='';
+  showToast(yes?'Response sent: Following along ✅':'Response sent: Need help ❌','success');
+}
+
+// ── TIMER ──
+function handleTimer(data){
+  if(!data.active) return;
+  showToast(`⏱ Timer: ${data.label} — ${Math.floor(data.remaining/60)}:${String(data.remaining%60).padStart(2,'0')} remaining`,'info');
+}
+
+// ── TOAST ──
+function showToast(msg, type='info'){
+  const existing=document.querySelector('.toast');
+  if(existing) existing.remove();
+  const d=document.createElement('div');
+  d.className='toast '+type;
+  const icons={info:'💬',success:'✅',warning:'⚠️'};
+  d.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${escapeHTML(msg)}</span>`;
+  document.body.appendChild(d);
+  setTimeout(()=>{ d.style.opacity='0'; d.style.transition='opacity .3s'; setTimeout(()=>d.remove(),300); },3500);
+}
+
+// ── STOP MODAL ──
+function confirmStop(){ document.getElementById('stopModal').style.display='flex'; }
+function closeModal(){ document.getElementById('stopModal').style.display='none'; }
+
+function stopStreaming(){ closeModal(); doStop(); }
+
+function doStop(){
+  clearInterval(screenInterval); clearInterval(cameraInterval); clearInterval(durationInterval);
+  if(screenStream) screenStream.getTracks().forEach(t=>t.stop());
+  if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+  if(ws) ws.close();
+  if(audioCtx) audioCtx.close();
+  document.getElementById('studioPanel').style.display='none';
+  document.getElementById('loginCard').style.display='block';
+  document.getElementById('topbarStatus').className='status-badge';
+  document.getElementById('topbarStatus').innerHTML='<span class="status-dot"></span> Offline';
+  frameCount=0; handRaised=false; chatMsgCount=0;
+  document.getElementById('chatMsgs').innerHTML='';
+  document.getElementById('announcementArea').innerHTML='';
+}
+</script>
+</body>
+</html>

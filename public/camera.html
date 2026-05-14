@@ -1,0 +1,690 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EduStream • Teacher Monitor Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    body {
+    background: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    color: #0f172a;
+    }
+
+    /* main dashboard layout */
+    .dashboard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    }
+
+    .top-bar {
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    }
+
+    .badge-live {
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    }
+
+    .pulse {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1.2); } }
+
+    .stats-row {
+    display: flex;
+    gap: 28px;
+    }
+
+    .stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    }
+
+    .stat-number {
+    font-size: 24px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: #4f46e5;
+    letter-spacing: -0.5px;
+    }
+
+    .controls {
+    display: flex;
+    gap: 12px;
+    }
+
+    .btn-icon {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 40px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #1e293b;
+    }
+
+    .btn-icon:hover {
+    background: #e6edf5;
+    border-color: #cbd5e1;
+    }
+
+    .btn-primary {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    }
+
+    .btn-primary:hover {
+    background: #4338ca;
+    }
+
+    /* main content - streaming grid */
+    .stream-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    }
+
+    .streams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 22px;
+    }
+
+    .student-card {
+    background: white;
+    border-radius: 1.25rem;
+    border: 1px solid #eef2ff;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    position: relative;
+    }
+
+    .student-card:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 12px 24px -12px rgba(79, 70, 229, 0.16);
+    transform: translateY(-2px);
+    }
+
+    .card-header {
+    padding: 12px 16px;
+    background: #fefeff;
+    border-bottom: 1px solid #f0f2f8;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    }
+
+    .avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(125deg, #4f46e5, #818cf8);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    }
+
+    .student-info {
+    flex: 1;
+    }
+
+    .student-name {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+    }
+
+    .student-class {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+    font-weight: 500;
+    }
+
+    .student-badges {
+    display: flex;
+    gap: 6px;
+    }
+
+    .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 30px;
+    background: #f1f5f9;
+    }
+
+    .badge.hand {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fed7aa;
+    }
+
+    .badge.mic-off {
+    background: #fef2f2;
+    color: #dc2626;
+    }
+
+    /* media section */
+    .media-wrapper {
+    position: relative;
+    background: #0f172a;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    }
+
+    .media-label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    }
+
+    .screen-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    }
+
+    /* CIRCLE CAMERA FEED */
+    .cam-circle {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid #4f46e5;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    overflow: hidden;
+    z-index: 20;
+    background: #1e293b;
+    transition: transform 0.2s ease;
+    }
+
+    .cam-circle:hover {
+    transform: scale(1.1);
+    border-color: #818cf8;
+    }
+
+    .cam-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+
+    .card-footer {
+    padding: 12px 16px;
+    background: #fafcff;
+    border-top: 1px solid #eef2ff;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    }
+
+    .card-action-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #334155;
+    }
+
+    .card-action-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    }
+
+    .fullscreen-btn {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: #4f46e5;
+    }
+
+    .empty-grid {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 60px 20px;
+    background: #f9fafc;
+    border-radius: 2rem;
+    gap: 16px;
+    color: #64748b;
+    }
+
+    .toast-msg {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0f172a;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+    }
+
+    .toast-msg.show {
+    opacity: 1;
+    transform: translateY(0);
+    }
+
+    /* modal spotlight */
+    .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal.open {
+    visibility: visible;
+    opacity: 1;
+    }
+
+    .modal-content {
+    background: #020617;
+    width: 95vw;
+    height: 85vh;
+    max-width: 1400px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    }
+
+    .modal-header {
+    padding: 16px 24px;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e293b;
+    }
+
+    .modal-header h3 {
+    color: white;
+    font-weight: 600;
+    }
+
+    .modal-body {
+    flex: 1;
+    position: relative;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    #modalScreenImg {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    }
+
+    #modalCamImgContainer {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 240px;
+    height: 135px;
+    border-radius: 16px;
+    border: 4px solid #4f46e5;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    #modalCamImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+
+    .modal-close {
+    background: #ef4444;
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    }
+
+    ::-webkit-scrollbar {
+    width: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+    }
+    </style>
+    </head>
+    <body>
+
+    <div class="dashboard">
+    <div class="top-bar">
+        <div class="logo-area">
+        <div style="background:#4f46e5; width:34px; height:34px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color:white; font-weight:800;">📡</div>
+        <div><strong style="font-size:18px;">EduStream</strong><span style="font-size:12px; margin-left:6px; color:#475569;">Teacher Hub</span></div>
+        <div class="badge-live"><span class="pulse"></span> LIVE SESSION</div>
+        </div>
+        <div class="stats-row">
+        <div class="stat-item"><span class="stat-number" id="totalCount">0</span> <span>students</span></div>
+        <div class="stat-item"><span class="stat-number" id="handsCount">0</span> <span>✋ raised</span></div>
+        <div class="stat-item"><span class="stat-number" id="screenCount">0</span> <span>screens active</span></div>
+        </div>
+        <div class="controls">
+        <button class="btn-icon" id="clearHandsBtn">✋ Dismiss all hands</button>
+        <button class="btn-icon btn-primary" id="syncConfigBtn">🔄 Sync view</button>
+        </div>
+    </div>
+
+    <div class="stream-container">
+        <div id="streamsGrid" class="streams-grid">
+        <div class="empty-grid">
+            <div style="font-size:48px;">📭</div>
+            <p>Waiting for students to join...</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="globalToast" class="toast-msg"></div>
+
+    <div id="spotlightModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h3 id="modalStudentName">Student spotlight</h3>
+        <button class="modal-close" id="closeModalBtn">Exit Spotlight</button>
+        </div>
+        <div class="modal-body">
+        <img id="modalScreenImg" src="" alt="Screen Content">
+        <div id="modalCamImgContainer">
+            <img id="modalCamImg" src="" alt="Camera Feed">
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    // WebSocket Connection
+    const ws = new WebSocket('ws://localhost:8080/?role=teacher');
+    let studentsData = new Map(); // id -> student object
+    let currentModalStudentId = null;
+
+    function showToast(msg, icon = '🔔') {
+        const toast = document.getElementById('globalToast');
+        toast.textContent = `${icon} ${msg}`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function escapeHtml(str) { 
+        if(!str) return ''; 
+        return str.toString().replace(/[&<>]/g, function(m) { 
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;'}[m]; 
+        }); 
+    }
+
+    function renderDashboard() {
+        const container = document.getElementById('streamsGrid');
+        const studentsArray = Array.from(studentsData.values());
+        
+        if(studentsArray.length === 0) {
+        container.innerHTML = `<div class="empty-grid"><div style="font-size:48px;">🎥</div><p>No students connected yet</p></div>`;
+        document.getElementById('totalCount').innerText = '0';
+        return;
+        }
+        
+        let handRaisedTotal = 0;
+        let activeScreenCount = 0;
+        
+        const cardsHtml = studentsArray.map(student => {
+        if(student.handRaised) handRaisedTotal++;
+        if(student.screenImgUrl) activeScreenCount++;
+        
+        const defaultScreen = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Ctext x='50%25' y='55%25' fill='%23475569' font-size='1' text-anchor='middle' font-family='sans-serif'%3ENo Stream%3C/text%3E%3C/svg%3E";
+        const defaultCam = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Ccircle cx='0.5' cy='0.5' r='0.5' fill='%23334155'/%3E%3C/svg%3E";
+        
+        let badgeHtml = '';
+        if(student.handRaised) badgeHtml += `<span class="badge hand">✋ Hand raised</span>`;
+        if(student.muted) badgeHtml += `<span class="badge mic-off">🔇 Muted</span>`;
+        
+        return `
+            <div class="student-card" data-student-id="${escapeHtml(student.id)}">
+            <div class="card-header">
+                <div class="avatar">${escapeHtml(student.avatar || '🎓')}</div>
+                <div class="student-info">
+                <div class="student-name">${escapeHtml(student.username)}</div>
+                <div class="student-class">${escapeHtml(student.class || 'Student')}</div>
+                </div>
+                <div class="student-badges">${badgeHtml}</div>
+            </div>
+            
+            <div class="media-wrapper">
+                <div class="media-label">📡 LIVE STREAM</div>
+                <img class="screen-img" src="${student.screenImgUrl || defaultScreen}" alt="Screen">
+                
+                <div class="cam-circle">
+                <img class="cam-img" src="${student.camImgUrl || defaultCam}" alt="Cam">
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="card-action-btn fullscreen-btn" onclick="openFullscreenModal('${student.id}')">🔍 Spotlight</button>
+                <button class="card-action-btn" onclick="dismissHand('${student.id}')">✋ Dismiss</button>
+                <button class="card-action-btn" onclick="toggleMute('${student.id}')">${student.muted ? '🔊 Unmute' : '🔇 Mute'}</button>
+            </div>
+            </div>
+        `;
+        }).join('');
+        
+        container.innerHTML = cardsHtml;
+        document.getElementById('totalCount').innerText = studentsArray.length;
+        document.getElementById('handsCount').innerText = handRaisedTotal;
+        document.getElementById('screenCount').innerText = activeScreenCount;
+    }
+    
+    function updateStudentMediaUI(studentId) {
+        const student = studentsData.get(studentId);
+        if(!student) return;
+        const card = document.querySelector(`.student-card[data-student-id="${studentId}"]`);
+        if(!card) return;
+        
+        const screenImg = card.querySelector('.screen-img');
+        const camImg = card.querySelector('.cam-img');
+        if(screenImg && student.screenImgUrl) screenImg.src = student.screenImgUrl;
+        if(camImg && student.camImgUrl) camImg.src = student.camImgUrl;
+
+        if(currentModalStudentId === studentId) {
+        document.getElementById('modalScreenImg').src = student.screenImgUrl || "";
+        document.getElementById('modalCamImg').src = student.camImgUrl || "";
+        }
+    }
+    
+    function dismissHand(studentId) {
+        const s = studentsData.get(studentId);
+        if(s) {
+        s.handRaised = false;
+        sendWsMessage({ type: 'DISMISS_HAND', studentId });
+        renderDashboard();
+        }
+    }
+
+    function toggleMute(studentId) {
+        const s = studentsData.get(studentId);
+        if(s) {
+        s.muted = !s.muted;
+        sendWsMessage({ type: s.muted ? 'MUTE_STUDENT' : 'UNMUTE_STUDENT', studentId });
+        renderDashboard();
+        }
+    }
+
+    function openFullscreenModal(studentId) {
+        const student = studentsData.get(studentId);
+        if(!student) return;
+        currentModalStudentId = studentId;
+        document.getElementById('modalStudentName').innerText = `Monitoring: ${student.username}`;
+        document.getElementById('modalScreenImg').src = student.screenImgUrl || "";
+        document.getElementById('modalCamImg').src = student.camImgUrl || "";
+        document.getElementById('spotlightModal').classList.add('open');
+    }
+    
+    function closeModal() {
+        currentModalStudentId = null;
+        document.getElementById('spotlightModal').classList.remove('open');
+    }
+
+    function sendWsMessage(msg) {
+        if(ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+    }
+
+    ws.onmessage = async (event) => {
+        if (typeof event.data === 'string') {
+        try {
+            const msg = JSON.parse(event.data);
+            switch(msg.type) {
+            case 'ACTIVE_LIST':
+                msg.data.forEach(st => studentsData.set(st.id, { ...st, screenImgUrl: null, camImgUrl: null }));
+                renderDashboard();
+                break;
+            case 'NEW_STUDENT':
+                studentsData.set(msg.data.id, { ...msg.data, screenImgUrl: null, camImgUrl: null });
+                renderDashboard();
+                break;
+            case 'DISCONNECT':
+                studentsData.delete(msg.data.id);
+                renderDashboard();
+                break;
+            case 'HAND_RAISE':
+                if(studentsData.has(msg.studentId)) {
+                studentsData.get(msg.studentId).handRaised = msg.raised;
+                renderDashboard();
+                }
+                break;
+            }
+        } catch(e) {}
+        } else {
+        // Handle binary frames: [ID]|TYPE[BYTES]
+        const buffer = await event.data.arrayBuffer();
+        const view = new DataView(buffer);
+        let pipeIndex = -1;
+        for(let i=0; i<50; i++) if(view.getUint8(i) === 124) { pipeIndex = i; break; }
+        if(pipeIndex === -1) return;
+
+        const id = new TextDecoder().decode(buffer.slice(0, pipeIndex));
+        const type = String.fromCharCode(view.getUint8(pipeIndex + 1));
+        const blob = new Blob([buffer.slice(pipeIndex + 2)], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(blob);
+
+        let student = studentsData.get(id);
+        if(!student) return;
+
+        if(type === 'S') {
+            if(student.screenImgUrl) URL.revokeObjectURL(student.screenImgUrl);
+            student.screenImgUrl = url;
+        } else {
+            if(student.camImgUrl) URL.revokeObjectURL(student.camImgUrl);
+            student.camImgUrl = url;
+        }
+        updateStudentMediaUI(id);
+        }
+    };
+
+    document.getElementById('closeModalBtn').onclick = closeModal;
+    document.getElementById('clearHandsBtn').onclick = () => {
+        studentsData.forEach(s => s.handRaised = false);
+        renderDashboard();
+        showToast('All hands dismissed');
+    };
+    </script>
+    </body>
+    </html>
