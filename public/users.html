@@ -1018,7 +1018,8 @@ async function startStreaming(){
   },1000);
 
   // WebSocket
-  const wsUrl=`ws://localhost:8080/?role=student&username=${encodeURIComponent(name)}&class=${encodeURIComponent(cls)}&avatar=${encodeURIComponent(selectedAvatar)}`;
+  // const wsUrl=`ws://localhost:8080/?role=student&username=${encodeURIComponent(name)}&class=${encodeURIComponent(cls)}&avatar=${encodeURIComponent(selectedAvatar)}`;
+  const wsUrl=`wss://desktop-monitoring.onrender.com/?role=student&username=${encodeURIComponent(name)}&class=${encodeURIComponent(cls)}&avatar=${encodeURIComponent(selectedAvatar)}`;
   ws=new WebSocket(wsUrl);
 
   ws.onopen=()=>{

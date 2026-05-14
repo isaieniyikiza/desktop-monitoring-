@@ -457,7 +457,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 <div class="toast" id="toast"></div>
 
 <script>
-const ws = new WebSocket('ws://localhost:8080/?role=teacher');
+// const ws = new WebSocket('ws://localhost:8080/?role=teacher');
+const ws = new WebSocket('wss://desktop-monitoring.onrender.com/?role=teacher');
 const studentsMap = new Map();
 const selectedIds = new Set();
 const pollsMap = new Map();

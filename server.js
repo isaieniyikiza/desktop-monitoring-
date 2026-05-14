@@ -1,11 +1,12 @@
-// EduLive Server — Enhanced v2
 const WebSocket = require("ws");
-const crypto = require("crypto");
-const url = require("url");
+const http = require("http");
 
-const wss = new WebSocket.Server({ port: 8080 });
-console.log("🚀 EduLive Server on ws://localhost:8080");
+const server = http.createServer();
+const wss = new WebSocket.WebSocketServer({ server });
 
+server.listen(process.env.PORT || 8080, () => {
+  console.log("Server running...");
+});
 // ── STATE ──
 const students = new Map();      // id -> student object
 const teachers = new Set();
