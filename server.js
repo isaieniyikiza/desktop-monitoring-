@@ -1,11 +1,14 @@
-const WebSocket = require("ws");
 const http = require("http");
+const { WebSocketServer } = require("ws");
 
 const server = http.createServer();
-const wss = new WebSocket.WebSocketServer({ server });
 
-server.listen(process.env.PORT || 8080, () => {
-  console.log("Server running...");
+const wss = new WebSocketServer({ server });
+
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log("🚀 Server running on port " + PORT);
 });
 // ── STATE ──
 const students = new Map();      // id -> student object
